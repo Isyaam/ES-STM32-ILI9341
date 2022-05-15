@@ -1,0 +1,21 @@
+;
+; STM32F429_DISCO_Start.sct
+;
+
+LR_IROM1 0x08000000 0x00100000  { 
+  ER_IROM1 0x08000000 0x00100000  { 
+    *.o (RESET, +First)
+    *(InRoot$$Sections)
+    .ANY (+RO)
+  }
+  RW_IRAM0 0x10000000 0x00010000  {  
+    *(CCM) ; Core-coupled memory (ideal für Stack).
+  }
+  RW_IRAM1 0x20000000 0x00030000  {
+    .ANY (+RW +ZI)
+  }
+  RW_IRAM2 0xD0000000 UNINIT 0x00800000  {
+    *(SDRAM) ; <== Die Video-Daten sollten im SDRAM liegen. Dazu __attribute__((section("SDRAM"))) verwenden.
+  }
+}
+

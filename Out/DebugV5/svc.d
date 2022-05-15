@@ -1,0 +1,17 @@
+.\out\debugv5\svc.o: Src\Cortex\SVC.cpp
+.\out\debugv5\svc.o: .\Inc\Compiler.h
+.\out\debugv5\svc.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+.\out\debugv5\svc.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
+.\out\debugv5\svc.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
+.\out\debugv5\svc.o: .\Inc\Cortex\Cortex.h
+.\out\debugv5\svc.o: .\Inc\Compiler.h
+.\out\debugv5\svc.o: .\Inc\Debug\Debug.h
+.\out\debugv5\svc.o: .\Inc\Compiler.h
+.\out\debugv5\svc.o: .\Inc\Utilities\Formatter.h
+.\out\debugv5\svc.o: .\Inc\Compiler.h
+.\out\debugv5\svc.o: .\Inc\Utilities\Meta.h
+.\out\debugv5\svc.o: .\Inc\Compiler.h
+.\out\debugv5\svc.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\limits.h
+.\out\debugv5\svc.o: .\Inc\Cortex\SVC.h
+.\out\debugv5\svc.o: .\Inc\Compiler.h
+.\out\debugv5\svc.o: .\Inc\Cortex\PSV.h

@@ -1,0 +1,125 @@
+
+
+
+ARM Macro Assembler    Page 1 
+
+
+    1 00000000         ;
+    2 00000000         ; ArmExclusive.s (bug free version of LDREX and STREX)
+    3 00000000         ;
+    4 00000000         
+    5 00000000                 AREA             |.text|, CODE, READONLY
+    6 00000000         
+    7 00000000         _LdrExW PROC
+    8 00000000                 EXPORT           _LdrExW               [WEAK]
+    9 00000000 E850 1F00       LDREX            R1, [R0]
+   10 00000004 4608            MOV              R0, R1
+   11 00000006 4770            BX               LR
+   12 00000008                 ENDP
+   13 00000008         
+   14 00000008         _LdrExH PROC
+   15 00000008                 EXPORT           _LdrExH               [WEAK]
+   16 00000008 E8D0 1F5F       LDREXH           R1, [R0]
+   17 0000000C 4608            MOV              R0, R1
+   18 0000000E 4770            BX               LR
+   19 00000010                 ENDP
+   20 00000010         
+   21 00000010         _LdrExB PROC
+   22 00000010                 EXPORT           _LdrExB               [WEAK]
+   23 00000010 E8D0 1F4F       LDREXB           R1, [R0]
+   24 00000014 4608            MOV              R0, R1
+   25 00000016 4770            BX               LR
+   26 00000018                 ENDP
+   27 00000018         
+   28 00000018         _StrExW PROC
+   29 00000018                 EXPORT           _StrExW               [WEAK]
+   30 00000018 E840 1200       STREX            R2, R1, [R0]
+   31 0000001C 4610            MOV              R0, R2
+   32 0000001E 4770            BX               LR
+   33 00000020                 ENDP
+   34 00000020         
+   35 00000020         _StrExH PROC
+   36 00000020                 EXPORT           _StrExH               [WEAK]
+   37 00000020 E840 1200       STREX            R2, R1, [R0]
+   38 00000024 4610            MOV              R0, R2
+   39 00000026 4770            BX               LR
+   40 00000028                 ENDP
+   41 00000028         
+   42 00000028         _StrExB PROC
+   43 00000028                 EXPORT           _StrExB               [WEAK]
+   44 00000028 E840 1200       STREX            R2, R1, [R0]
+   45 0000002C 4610            MOV              R0, R2
+   46 0000002E 4770            BX               LR
+   47 00000030                 ENDP
+   48 00000030         
+   49 00000030                 END
+Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M4 --apcs=interw
+ork --depend=.\out\debugv5\armexclusive.d -o.\out\debugv5\armexclusive.o -I.\RT
+E\_Debug_V5 -IC:\Users\jensk\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.13.0\
+Drivers\CMSIS\Device\ST\STM32F4xx\Include -IC:\Keil_v5\ARM\CMSIS\Include --pred
+efine="__UVISION_VERSION SETA 527" --predefine="STM32F429xx SETA 1" --list=.\ls
+t\debugv5\armexclusive.lst Src\Cortex\ArmExclusive.s
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+Relocatable symbols
+
+.text 00000000
+
+Symbol: .text
+   Definitions
+      At line 5 in file Src\Cortex\ArmExclusive.s
+   Uses
+      None
+Comment: .text unused
+_LdrExB 00000010
+
+Symbol: _LdrExB
+   Definitions
+      At line 21 in file Src\Cortex\ArmExclusive.s
+   Uses
+      At line 22 in file Src\Cortex\ArmExclusive.s
+Comment: _LdrExB used once
+_LdrExH 00000008
+
+Symbol: _LdrExH
+   Definitions
+      At line 14 in file Src\Cortex\ArmExclusive.s
+   Uses
+      At line 15 in file Src\Cortex\ArmExclusive.s
+Comment: _LdrExH used once
+_LdrExW 00000000
+
+Symbol: _LdrExW
+   Definitions
+      At line 7 in file Src\Cortex\ArmExclusive.s
+   Uses
+      At line 8 in file Src\Cortex\ArmExclusive.s
+Comment: _LdrExW used once
+_StrExB 00000028
+
+Symbol: _StrExB
+   Definitions
+      At line 42 in file Src\Cortex\ArmExclusive.s
+   Uses
+      At line 43 in file Src\Cortex\ArmExclusive.s
+Comment: _StrExB used once
+_StrExH 00000020
+
+Symbol: _StrExH
+   Definitions
+      At line 35 in file Src\Cortex\ArmExclusive.s
+   Uses
+      At line 36 in file Src\Cortex\ArmExclusive.s
+Comment: _StrExH used once
+_StrExW 00000018
+
+Symbol: _StrExW
+   Definitions
+      At line 28 in file Src\Cortex\ArmExclusive.s
+   Uses
+      At line 29 in file Src\Cortex\ArmExclusive.s
+Comment: _StrExW used once
+7 symbols
+339 symbols in table

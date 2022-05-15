@@ -1,0 +1,4226 @@
+L 1 "Src\Target\PreMain.cpp"
+N//
+N// PreMain.cpp
+N//
+N
+N/// \file PreMain.cpp
+N/// Initialisierungfunktionen, die vor \c main() aufgerufen werden und Routinen zum Fehler-Handling.
+N
+N#include <Compiler.h>
+L 1 ".\Inc\Compiler.h" 1
+N//
+N// Compiler.h
+N//
+N
+N/// \file Compiler.h
+N/// Compiler-spezifische Definitions, Macros und Funktionen.
+N/// Um die Quellen auch zu Testzwecken auch mit anderen Compilern (z.B. MSC) übersetzen zu können, müssten in dieser Datei
+N/// mittels bedingter Kompilierung verschiedene Makros für die unterschiedlichen Compiler definiert werden.
+N
+N#if ! defined(guard_COMPILER_H) && defined(__arm__)
+X#if ! 0L && 1L
+N# define guard_COMPILER_H
+N
+N# if ! defined(__cplusplus)
+X# if ! 1L
+S#  error C++ only!
+N# endif
+N
+N# if   defined(_DEBUG)  && ! defined(DEBUG)
+X# if   0L  && ! 1L
+S#  define DEBUG
+N# endif
+N
+N# if   defined(RELEASE) &&   defined(DEBUG)
+X# if   0L &&   1L
+S#  error You cannot define RELEASE and DEBUG at the same time
+N# endif
+N# if ! defined(RELEASE) && ! defined(DEBUG)
+X# if ! 0L && ! 1L
+S#  error You must define ether RELEASE or DEBUG
+N# endif
+N
+N# include <stdint.h>
+L 1 "C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h" 1
+N/* Copyright (C) ARM Ltd., 1999,2014 */
+N/* All rights reserved */
+N
+N/*
+N * RCS $Revision$
+N * Checkin $Date$
+N * Revising $Author: agrant $
+N */
+N
+N#ifndef __stdint_h
+N#define __stdint_h
+N#define __ARMCLIB_VERSION 5060037
+N
+N  #ifdef __INT64_TYPE__
+S    /* armclang predefines '__INT64_TYPE__' and '__INT64_C_SUFFIX__' */
+S    #define __INT64 __INT64_TYPE__
+N  #else
+N    /* armcc has builtin '__int64' which can be used in --strict mode */
+N    #define __INT64 __int64
+N    #define __INT64_C_SUFFIX__ ll
+N  #endif
+N  #define __PASTE2(x, y) x ## y
+N  #define __PASTE(x, y) __PASTE2(x, y)
+N  #define __INT64_C(x)  __ESCAPE__(__PASTE(x, __INT64_C_SUFFIX__))
+N  #define __UINT64_C(x)  __ESCAPE__(__PASTE(x ## u, __INT64_C_SUFFIX__))
+N  #if defined(__clang__) || (defined(__ARMCC_VERSION) && !defined(__STRICT_ANSI__))
+X  #if 0L || (1L && !0L)
+N    /* armclang and non-strict armcc allow 'long long' in system headers */
+N    #define __LONGLONG long long
+N  #else
+S    /* strict armcc has '__int64' */
+S    #define __LONGLONG __int64
+N  #endif
+N
+N  #ifndef __STDINT_DECLS
+N  #define __STDINT_DECLS
+N
+N    #undef __CLIBNS
+N
+N    #ifdef __cplusplus
+N      namespace std {
+N          #define __CLIBNS std::
+N          extern "C" {
+N    #else
+S      #define __CLIBNS
+N    #endif  /* __cplusplus */
+N
+N
+N/*
+N * 'signed' is redundant below, except for 'signed char' and if
+N * the typedef is used to declare a bitfield.
+N */
+N
+N    /* 7.18.1.1 */
+N
+N    /* exact-width signed integer types */
+Ntypedef   signed          char int8_t;
+Ntypedef   signed short     int int16_t;
+Ntypedef   signed           int int32_t;
+Ntypedef   signed       __INT64 int64_t;
+Xtypedef   signed       __int64 int64_t;
+N
+N    /* exact-width unsigned integer types */
+Ntypedef unsigned          char uint8_t;
+Ntypedef unsigned short     int uint16_t;
+Ntypedef unsigned           int uint32_t;
+Ntypedef unsigned       __INT64 uint64_t;
+Xtypedef unsigned       __int64 uint64_t;
+N
+N    /* 7.18.1.2 */
+N
+N    /* smallest type of at least n bits */
+N    /* minimum-width signed integer types */
+Ntypedef   signed          char int_least8_t;
+Ntypedef   signed short     int int_least16_t;
+Ntypedef   signed           int int_least32_t;
+Ntypedef   signed       __INT64 int_least64_t;
+Xtypedef   signed       __int64 int_least64_t;
+N
+N    /* minimum-width unsigned integer types */
+Ntypedef unsigned          char uint_least8_t;
+Ntypedef unsigned short     int uint_least16_t;
+Ntypedef unsigned           int uint_least32_t;
+Ntypedef unsigned       __INT64 uint_least64_t;
+Xtypedef unsigned       __int64 uint_least64_t;
+N
+N    /* 7.18.1.3 */
+N
+N    /* fastest minimum-width signed integer types */
+Ntypedef   signed           int int_fast8_t;
+Ntypedef   signed           int int_fast16_t;
+Ntypedef   signed           int int_fast32_t;
+Ntypedef   signed       __INT64 int_fast64_t;
+Xtypedef   signed       __int64 int_fast64_t;
+N
+N    /* fastest minimum-width unsigned integer types */
+Ntypedef unsigned           int uint_fast8_t;
+Ntypedef unsigned           int uint_fast16_t;
+Ntypedef unsigned           int uint_fast32_t;
+Ntypedef unsigned       __INT64 uint_fast64_t;
+Xtypedef unsigned       __int64 uint_fast64_t;
+N
+N    /* 7.18.1.4 integer types capable of holding object pointers */
+N#if __sizeof_ptr == 8
+X#if 4 == 8
+Stypedef   signed       __INT64 intptr_t;
+Stypedef unsigned       __INT64 uintptr_t;
+N#else
+Ntypedef   signed           int intptr_t;
+Ntypedef unsigned           int uintptr_t;
+N#endif
+N
+N    /* 7.18.1.5 greatest-width integer types */
+Ntypedef   signed     __LONGLONG intmax_t;
+Xtypedef   signed     long long intmax_t;
+Ntypedef unsigned     __LONGLONG uintmax_t;
+Xtypedef unsigned     long long uintmax_t;
+N
+N
+N#if !defined(__cplusplus) || defined(__STDC_LIMIT_MACROS)
+X#if !1L || 0L
+S
+S    /* 7.18.2.1 */
+S
+S    /* minimum values of exact-width signed integer types */
+S#define INT8_MIN                   -128
+S#define INT16_MIN                -32768
+S#define INT32_MIN          (~0x7fffffff)   /* -2147483648 is unsigned */
+S#define INT64_MIN  __INT64_C(~0x7fffffffffffffff) /* -9223372036854775808 is unsigned */
+S
+S    /* maximum values of exact-width signed integer types */
+S#define INT8_MAX                    127
+S#define INT16_MAX                 32767
+S#define INT32_MAX            2147483647
+S#define INT64_MAX  __INT64_C(9223372036854775807)
+S
+S    /* maximum values of exact-width unsigned integer types */
+S#define UINT8_MAX                   255
+S#define UINT16_MAX                65535
+S#define UINT32_MAX           4294967295u
+S#define UINT64_MAX __UINT64_C(18446744073709551615)
+S
+S    /* 7.18.2.2 */
+S
+S    /* minimum values of minimum-width signed integer types */
+S#define INT_LEAST8_MIN                   -128
+S#define INT_LEAST16_MIN                -32768
+S#define INT_LEAST32_MIN          (~0x7fffffff)
+S#define INT_LEAST64_MIN  __INT64_C(~0x7fffffffffffffff)
+S
+S    /* maximum values of minimum-width signed integer types */
+S#define INT_LEAST8_MAX                    127
+S#define INT_LEAST16_MAX                 32767
+S#define INT_LEAST32_MAX            2147483647
+S#define INT_LEAST64_MAX  __INT64_C(9223372036854775807)
+S
+S    /* maximum values of minimum-width unsigned integer types */
+S#define UINT_LEAST8_MAX                   255
+S#define UINT_LEAST16_MAX                65535
+S#define UINT_LEAST32_MAX           4294967295u
+S#define UINT_LEAST64_MAX __UINT64_C(18446744073709551615)
+S
+S    /* 7.18.2.3 */
+S
+S    /* minimum values of fastest minimum-width signed integer types */
+S#define INT_FAST8_MIN           (~0x7fffffff)
+S#define INT_FAST16_MIN          (~0x7fffffff)
+S#define INT_FAST32_MIN          (~0x7fffffff)
+S#define INT_FAST64_MIN  __INT64_C(~0x7fffffffffffffff)
+S
+S    /* maximum values of fastest minimum-width signed integer types */
+S#define INT_FAST8_MAX             2147483647
+S#define INT_FAST16_MAX            2147483647
+S#define INT_FAST32_MAX            2147483647
+S#define INT_FAST64_MAX  __INT64_C(9223372036854775807)
+S
+S    /* maximum values of fastest minimum-width unsigned integer types */
+S#define UINT_FAST8_MAX            4294967295u
+S#define UINT_FAST16_MAX           4294967295u
+S#define UINT_FAST32_MAX           4294967295u
+S#define UINT_FAST64_MAX __UINT64_C(18446744073709551615)
+S
+S    /* 7.18.2.4 */
+S
+S    /* minimum value of pointer-holding signed integer type */
+S#if __sizeof_ptr == 8
+S#define INTPTR_MIN INT64_MIN
+S#else
+S#define INTPTR_MIN INT32_MIN
+S#endif
+S
+S    /* maximum value of pointer-holding signed integer type */
+S#if __sizeof_ptr == 8
+S#define INTPTR_MAX INT64_MAX
+S#else
+S#define INTPTR_MAX INT32_MAX
+S#endif
+S
+S    /* maximum value of pointer-holding unsigned integer type */
+S#if __sizeof_ptr == 8
+S#define UINTPTR_MAX UINT64_MAX
+S#else
+S#define UINTPTR_MAX UINT32_MAX
+S#endif
+S
+S    /* 7.18.2.5 */
+S
+S    /* minimum value of greatest-width signed integer type */
+S#define INTMAX_MIN  __ESCAPE__(~0x7fffffffffffffffll)
+S
+S    /* maximum value of greatest-width signed integer type */
+S#define INTMAX_MAX  __ESCAPE__(9223372036854775807ll)
+S
+S    /* maximum value of greatest-width unsigned integer type */
+S#define UINTMAX_MAX __ESCAPE__(18446744073709551615ull)
+S
+S    /* 7.18.3 */
+S
+S    /* limits of ptrdiff_t */
+S#if __sizeof_ptr == 8
+S#define PTRDIFF_MIN INT64_MIN
+S#define PTRDIFF_MAX INT64_MAX
+S#else
+S#define PTRDIFF_MIN INT32_MIN
+S#define PTRDIFF_MAX INT32_MAX
+S#endif
+S
+S    /* limits of sig_atomic_t */
+S#define SIG_ATOMIC_MIN (~0x7fffffff)
+S#define SIG_ATOMIC_MAX   2147483647
+S
+S    /* limit of size_t */
+S#if __sizeof_ptr == 8
+S#define SIZE_MAX UINT64_MAX
+S#else
+S#define SIZE_MAX UINT32_MAX
+S#endif
+S
+S    /* limits of wchar_t */
+S    /* NB we have to undef and redef because they're defined in both
+S     * stdint.h and wchar.h */
+S#undef WCHAR_MIN
+S#undef WCHAR_MAX
+S
+S#if defined(__WCHAR32) || (defined(__ARM_SIZEOF_WCHAR_T) && __ARM_SIZEOF_WCHAR_T == 4)
+S  #define WCHAR_MIN   0
+S  #define WCHAR_MAX   0xffffffffU
+S#else
+S  #define WCHAR_MIN   0
+S  #define WCHAR_MAX   65535
+S#endif
+S
+S    /* limits of wint_t */
+S#define WINT_MIN (~0x7fffffff)
+S#define WINT_MAX 2147483647
+S
+N#endif /* __STDC_LIMIT_MACROS */
+N
+N#if !defined(__cplusplus) || defined(__STDC_CONSTANT_MACROS)
+X#if !1L || 0L
+S
+S    /* 7.18.4.1 macros for minimum-width integer constants */
+S#define INT8_C(x)   (x)
+S#define INT16_C(x)  (x)
+S#define INT32_C(x)  (x)
+S#define INT64_C(x)  __INT64_C(x)
+S
+S#define UINT8_C(x)  (x ## u)
+S#define UINT16_C(x) (x ## u)
+S#define UINT32_C(x) (x ## u)
+S#define UINT64_C(x) __UINT64_C(x)
+S
+S    /* 7.18.4.2 macros for greatest-width integer constants */
+S#define INTMAX_C(x)  __ESCAPE__(x ## ll)
+S#define UINTMAX_C(x) __ESCAPE__(x ## ull)
+S
+N#endif /* __STDC_CONSTANT_MACROS */
+N
+N    #ifdef __cplusplus
+N         }  /* extern "C" */
+N      }  /* namespace std */
+N    #endif /* __cplusplus */
+N  #endif /* __STDINT_DECLS */
+N
+N  #ifdef __cplusplus
+N    #ifndef __STDINT_NO_EXPORTS
+N      using ::std::int8_t;
+N      using ::std::int16_t;
+N      using ::std::int32_t;
+N      using ::std::int64_t;
+N      using ::std::uint8_t;
+N      using ::std::uint16_t;
+N      using ::std::uint32_t;
+N      using ::std::uint64_t;
+N      using ::std::int_least8_t;
+N      using ::std::int_least16_t;
+N      using ::std::int_least32_t;
+N      using ::std::int_least64_t;
+N      using ::std::uint_least8_t;
+N      using ::std::uint_least16_t;
+N      using ::std::uint_least32_t;
+N      using ::std::uint_least64_t;
+N      using ::std::int_fast8_t;
+N      using ::std::int_fast16_t;
+N      using ::std::int_fast32_t;
+N      using ::std::int_fast64_t;
+N      using ::std::uint_fast8_t;
+N      using ::std::uint_fast16_t;
+N      using ::std::uint_fast32_t;
+N      using ::std::uint_fast64_t;
+N      using ::std::intptr_t;
+N      using ::std::uintptr_t;
+N      using ::std::intmax_t;
+N      using ::std::uintmax_t;
+N    #endif
+N  #endif /* __cplusplus */
+N
+N#undef __INT64
+N#undef __LONGLONG
+N
+N#endif /* __stdint_h */
+N
+N/* end of stdint.h */
+L 29 ".\Inc\Compiler.h" 2
+N# include <stdbool.h>
+L 1 "C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h" 1
+N/* stdbool.h: ISO/IEC 9899:1999 (C99), section 7.16 */
+N
+N/* Copyright (C) ARM Ltd., 2002
+N * All rights reserved
+N * RCS $Revision$
+N * Checkin $Date$
+N * Revising $Author: drodgman $
+N */
+N
+N#ifndef __bool_true_false_are_defined
+N#define __bool_true_false_are_defined 1
+N#define __ARMCLIB_VERSION 5060037
+N
+N  #ifndef __cplusplus /* In C++, 'bool', 'true' and 'false' and keywords */
+S    #define bool _Bool
+S    #define true 1
+S    #define false 0
+N  #else
+N    #ifdef __GNUC__
+S      /* GNU C++ supports direct inclusion of stdbool.h to provide C99
+S         compatibility by defining _Bool */
+S      #define _Bool bool
+N    #endif
+N  #endif
+N
+N#endif /* __bool_true_false_are_defined */
+N
+L 30 ".\Inc\Compiler.h" 2
+N
+N# define BYTE                   uint8_t               ///< Byte-Datentyp (8 Bits).
+N# define WORD                   uint32_t              ///< Wort-Datentyp (nach ARM-Konvention 32 Bits, d.h. 4 Bytes).
+N# define HWRD                   uint16_t              ///< Halbwort-Datentyp (nach ARM-Konvention 16 Bits, d.h. 2 Bytes).
+N# define DWRD                   uint64_t              ///< Doppelwort-Datentyp (nach ARM-Konvention 8 Bytes).
+N
+N// Nomenklatur <s>INT<nn>:
+N// <s> = U bzw. S für unsigned bzw. signed
+N// <nn> = 08, 12, 32, 64 für 8 bis 64 Bits
+N
+N# define UINT64                 uint64_t              ///< 8 byte unsigned int.
+N# define SINT64                 int64_t               ///< 8 byte signed int.
+N
+N# define UINT32                 uint32_t              ///< 4 byte unsigned int.
+N# define SINT32                 int32_t               ///< 4 byte signed int.
+N
+N# define UINT16                 uint16_t              ///< 2 byte unsigned int.
+N# define SINT16                 int16_t               ///< 2 byte signed int.
+N
+N# define UINT08                 uint8_t               ///< Single byte unsigned int.
+N# define SINT08                 int8_t                ///< Single byte signed int.
+N
+N# include <stddef.h>
+L 1 "C:\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h" 1
+N/* stddef.h: ANSI 'C' (X3J11 Oct 88) library header, section 4.1.4 */
+N
+N/* Copyright (C) ARM Ltd., 1999
+N * All rights reserved
+N * RCS $Revision$
+N * Checkin $Date$
+N * Revising $Author: agrant $
+N */
+N
+N/* Copyright (C) Codemist Ltd., 1988                            */
+N/* Copyright 1991 ARM Limited. All rights reserved.             */
+N/* version 0.05 */
+N
+N/*
+N * The following types and macros are defined in several headers referred to in
+N * the descriptions of the functions declared in that header. They are also
+N * defined in this header file.
+N */
+N
+N#ifndef __stddef_h
+N#define __stddef_h
+N#define __ARMCLIB_VERSION 5060037
+N
+N  #ifndef __STDDEF_DECLS
+N  #define __STDDEF_DECLS
+N    #undef __CLIBNS
+N    #ifdef __cplusplus
+N        namespace std {
+N        #define __CLIBNS ::std::
+N        extern "C" {
+N    #else
+S      #define __CLIBNS
+N    #endif  /* __cplusplus */
+N
+N#if __sizeof_ptr == 8
+X#if 4 == 8
+S  typedef signed long ptrdiff_t;
+N#else
+N  typedef signed int ptrdiff_t;
+N#endif
+N
+N#if defined(__cplusplus) || !defined(__STRICT_ANSI__)
+X#if 1L || !0L
+N /* unconditional in C++ and non-strict C for consistency of debug info */
+N  #if __sizeof_ptr == 8
+X  #if 4 == 8
+S    typedef unsigned long size_t;   /* see <stddef.h> */
+N  #else
+N    typedef unsigned int size_t;   /* see <stddef.h> */
+N  #endif
+N#elif !defined(__size_t)
+S  #define __size_t 1
+S  #if __sizeof_ptr == 8
+S    typedef unsigned long size_t;   /* see <stddef.h> */
+S  #else
+S    typedef unsigned int size_t;   /* see <stddef.h> */
+S  #endif
+S   /* the unsigned integral type of the result of the sizeof operator. */
+N#endif
+N
+N#ifndef __cplusplus  /* wchar_t is a builtin type for C++ */
+S  #if !defined(__STRICT_ANSI__)
+S  /* unconditional in non-strict C for consistency of debug info */
+S    #if defined(__WCHAR32) || (defined(__ARM_SIZEOF_WCHAR_T) && __ARM_SIZEOF_WCHAR_T == 4)
+S      typedef unsigned int wchar_t; /* also in <stdlib.h> and <inttypes.h> */
+S    #else
+S      typedef unsigned short wchar_t; /* also in <stdlib.h> and <inttypes.h> */
+S    #endif
+S  #elif !defined(__wchar_t)
+S    #define __wchar_t 1
+S    #if defined(__WCHAR32) || (defined(__ARM_SIZEOF_WCHAR_T) && __ARM_SIZEOF_WCHAR_T == 4)
+S      typedef unsigned int wchar_t; /* also in <stdlib.h> and <inttypes.h> */
+S    #else
+S      typedef unsigned short wchar_t; /* also in <stdlib.h> and <inttypes.h> */
+S    #endif
+S   /*
+S    * An integral type whose range of values can represent distinct codes for
+S    * all members of the largest extended character set specified among the
+S    * supported locales; the null character shall have the code value zero and
+S    * each member of the basic character set shall have a code value when used
+S    * as the lone character in an integer character constant.
+S    */
+S  #endif
+N#endif
+N
+N#undef NULL  /* others (e.g. <stdio.h>) also define */
+N#define NULL 0
+N   /* null pointer constant. */
+N
+N#ifdef __clang__
+S  #define offsetof(t, d) __builtin_offsetof(t, d)
+N#else
+N  /* EDG uses __INTADDR__ to avoid errors when strict */
+N  #define offsetof(t, memb) ((__CLIBNS size_t)__INTADDR__(&(((t *)0)->memb)))
+N#endif
+N
+N#if !defined(__STRICT_ANSI__) || (defined(__STDC_VERSION__) && 201112L <= __STDC_VERSION__) || (defined(__cplusplus) && 201103L <= __cplusplus)
+X#if !0L || (0L && 201112L <= __STDC_VERSION__) || (1L && 201103L <= 201103L)
+N  typedef long double max_align_t;
+N#endif
+N
+N    #ifdef __cplusplus
+N         }  /* extern "C" */
+N      }  /* namespace std */
+N    #endif /* __cplusplus */
+N  #endif /* __STDDEF_DECLS */
+N
+N
+N  #ifdef __cplusplus
+N    #ifndef __STDDEF_NO_EXPORTS
+N      using ::std::size_t;
+N      using ::std::ptrdiff_t;
+N      #if !defined(__STRICT_ANSI__) || (defined(__cplusplus) && 201103L <= __cplusplus)
+X      #if !0L || (1L && 201103L <= 201103L)
+N        using ::std::max_align_t;
+N      #endif
+N    #endif 
+N  #endif /* __cplusplus */
+N
+N#endif
+N
+N/* end of stddef.h */
+N
+L 53 ".\Inc\Compiler.h" 2
+N
+N# if __ARMCC_VERSION >= 6000000
+X# if 5060750 >= 6000000
+S#  pragma clang diagnostic ignored "-Wgnu-anonymous-struct"
+S#  pragma clang diagnostic ignored "-Wnested-anon-types"
+S#  pragma clang diagnostic ignored "-Wc++17-compat-mangling"
+S#  pragma clang diagnostic ignored "-Wc++98-compat-pedantic"
+S#  pragma clang diagnostic ignored "-Wc++98-compat"
+S#  pragma clang diagnostic ignored "-Wgcc-compat"
+S
+S#  define IMPORT(X)             asm(".global " #X);
+S
+Sstatic __attribute__((always_inline)) inline void ___barrier(void) { asm volatile("" ::: "memory", "cc"); }
+S
+S#  define SCHEDULE_BARRIER      ___barrier
+S#  define FORCE_STORES          ___barrier
+S#  define MEMORY_CHANGED        ___barrier
+S
+S#  define __weak                __attribute__((weak))
+S#  define __svc(...)
+S#  define __align(x)            __attribute__((aligned(x)))
+S
+S#  define __clrex               __builtin_arm_clrex
+S#  define __dmb                 __builtin_arm_dmb
+S#  define __dsb                 __builtin_arm_dsb
+S#  define __isb                 __builtin_arm_isb
+S#  define __wfi                 __builtin_arm_wfi
+S#  define __wfe                 __builtin_arm_wfe
+S#  define __rbit                __builtin_arm_rbit
+S#  define __rev                 __builtin_bswap32
+S#  define __clz                 __builtin_clz
+S
+S#  define ARM_RSR(NAME)         __builtin_arm_rsr(#NAME)
+S#  define ARM_WSR(NAME, VALUE)  __builtin_arm_wsr(#NAME, VALUE)
+S
+S#  define DEFINE_ARM_RSR(NAME)  inline WORD ARM_RSR_ ## NAME()                 noexcept { return ARM_RSR(NAME); }
+S#  define DEFINE_ARM_WSR(NAME)  inline void ARM_WSR_ ## NAME(WORD const value) noexcept { ARM_WSR(NAME, value); }
+S
+S#  define OFFSET_OF(S, M)       __builtin_offsetof(S, M)
+S
+S#  define BREAKPOINT(v)         asm volatile("bkpt %0" :: "i"(v))
+S
+S#  define WRITEONLY             /// not implemented
+S#  define READONLY              const
+S
+S#  define __AT(ADDR)            __attribute__((section(".ARM.__at_" #ADDR)))
+S#  define LOCATE_AT(ADDR)       __AT(ADDR)
+S
+S#  define FORCE_INLINE          __attribute__((always_inline)) inline
+S
+S#  define FILE                  __FILE__
+S#  define FUNC                  __FUNCTION__
+S#  define LINE                  __LINE__
+N# else
+N#  pragma anon_unions
+N#  define PRAGMA(X)             _Pragma(#X)
+N
+N#  define IMPORT(X)             PRAGMA(import(X))
+N
+N#  define SCHEDULE_BARRIER()    __schedule_barrier() ///< Compiler-spezifische Pseudo-Anweisung, um die compiler-bedingte Umsortierung von Befehlen über diese Grenze hinaus zu unterbinden. 
+N#  define FORCE_STORES()        __force_stores()
+N#  define MEMORY_CHANGED()      __memory_changed()
+N
+N#  define DEFINE_ARM_RSR(NAME)  inline WORD ARM_RSR_ ## NAME()                 noexcept { register WORD NAME __asm(#NAME); return NAME; }
+N#  define DEFINE_ARM_WSR(NAME)  inline void ARM_WSR_ ## NAME(WORD const value) noexcept { register WORD NAME __asm(#NAME); NAME = value; }
+N
+N#  define ARM_RSR(NAME)         ARM_RSR_ ## NAME()
+N#  define ARM_WSR(NAME, VALUE)  ARM_WSR_ ## NAME(VALUE)
+N
+N#  define OFFSET_OF(S, M)       offsetof(S, M)
+N
+N#  define BREAKPOINT(n)         __breakpoint(n)
+N
+N#  define WRITEONLY             __writeonly
+N#  define READONLY              const
+N
+N#  define LOCATE_AT(ADDR)       __attribute__((at(ADDR)))
+N
+N#  define FORCE_INLINE          __forceinline
+N
+N#  define FILE                  __MODULE__            ///< Name der aktuellen Datei.
+N
+N#  define FUNC                  __PRETTY_FUNCTION__   ///< Name der aktuellen Funktion.
+N#  define LINE                  __LINE__              ///< Aktuelle Zeilennummer.
+N# endif
+N
+Nnamespace std { using nullptr_t = decltype(nullptr); }
+N
+N# if defined(DEBUG) && ! defined(NO_BREAK)
+X# if 1L && ! 0L
+N#  define DEBUG_BREAK(n)        BREAKPOINT(n)
+N# else
+S#  define DEBUG_BREAK(n)
+N# endif
+N
+N# define __CONCAT(A, B)         A##B
+N# define CONCAT(A, B)           __CONCAT(A, B)
+N
+Ntemplate<typename TYPE, unsigned DIM> constexpr unsigned ArrayDim(TYPE const (&)[DIM]) noexcept { return DIM; }
+Ntemplate<typename TYPE, unsigned DIM> constexpr unsigned ArrayMax(TYPE const (&)[DIM]) noexcept { return DIM - 1U; }
+N
+Ntemplate<typename TYPE, unsigned H, unsigned W> constexpr unsigned MatrixRows(TYPE const (&)[H][W]) noexcept { return H; }
+Ntemplate<typename TYPE, unsigned H, unsigned W> constexpr unsigned MatrixCols(TYPE const (&)[H][W]) noexcept { return W; }
+N
+N/// Achtung: Die obigen Varianten zur Bestimmung von Feld oder Matrixdimensionen funktionieren nicht, wenn das Feld
+N/// nicht-statische Member-Variable in einer Klasse ist, weil der this-Zeiger nicht constexpr ist.
+N
+Ninline void * operator new   (unsigned, void * const p) noexcept { return p; }
+Ninline void   operator delete(void *, void *) noexcept { }
+N
+N#endif
+N
+L 9 "Src\Target\PreMain.cpp" 2
+N#include <Debug.h>
+L 1 ".\Inc\Debug\Debug.h" 1
+N//
+N// Debug.h
+N//
+N
+N#ifndef guard_DEBUG_H
+N# define guard_DEBUG_H
+N
+N# include <Compiler.h>
+L 1 ".\Inc\Compiler.h" 1
+N//
+N// Compiler.h
+N//
+N
+N/// \file Compiler.h
+N/// Compiler-spezifische Definitions, Macros und Funktionen.
+N/// Um die Quellen auch zu Testzwecken auch mit anderen Compilern (z.B. MSC) übersetzen zu können, müssten in dieser Datei
+N/// mittels bedingter Kompilierung verschiedene Makros für die unterschiedlichen Compiler definiert werden.
+N
+N#if ! defined(guard_COMPILER_H) && defined(__arm__)
+X#if ! 1L && 1L
+S# define guard_COMPILER_H
+S
+S# if ! defined(__cplusplus)
+S#  error C++ only!
+S# endif
+S
+S# if   defined(_DEBUG)  && ! defined(DEBUG)
+S#  define DEBUG
+S# endif
+S
+S# if   defined(RELEASE) &&   defined(DEBUG)
+S#  error You cannot define RELEASE and DEBUG at the same time
+S# endif
+S# if ! defined(RELEASE) && ! defined(DEBUG)
+S#  error You must define ether RELEASE or DEBUG
+S# endif
+S
+S# include <stdint.h>
+S# include <stdbool.h>
+S
+S# define BYTE                   uint8_t               ///< Byte-Datentyp (8 Bits).
+S# define WORD                   uint32_t              ///< Wort-Datentyp (nach ARM-Konvention 32 Bits, d.h. 4 Bytes).
+S# define HWRD                   uint16_t              ///< Halbwort-Datentyp (nach ARM-Konvention 16 Bits, d.h. 2 Bytes).
+S# define DWRD                   uint64_t              ///< Doppelwort-Datentyp (nach ARM-Konvention 8 Bytes).
+S
+S// Nomenklatur <s>INT<nn>:
+S// <s> = U bzw. S für unsigned bzw. signed
+S// <nn> = 08, 12, 32, 64 für 8 bis 64 Bits
+S
+S# define UINT64                 uint64_t              ///< 8 byte unsigned int.
+S# define SINT64                 int64_t               ///< 8 byte signed int.
+S
+S# define UINT32                 uint32_t              ///< 4 byte unsigned int.
+S# define SINT32                 int32_t               ///< 4 byte signed int.
+S
+S# define UINT16                 uint16_t              ///< 2 byte unsigned int.
+S# define SINT16                 int16_t               ///< 2 byte signed int.
+S
+S# define UINT08                 uint8_t               ///< Single byte unsigned int.
+S# define SINT08                 int8_t                ///< Single byte signed int.
+S
+S# include <stddef.h>
+S
+S# if __ARMCC_VERSION >= 6000000
+S#  pragma clang diagnostic ignored "-Wgnu-anonymous-struct"
+S#  pragma clang diagnostic ignored "-Wnested-anon-types"
+S#  pragma clang diagnostic ignored "-Wc++17-compat-mangling"
+S#  pragma clang diagnostic ignored "-Wc++98-compat-pedantic"
+S#  pragma clang diagnostic ignored "-Wc++98-compat"
+S#  pragma clang diagnostic ignored "-Wgcc-compat"
+S
+S#  define IMPORT(X)             asm(".global " #X);
+S
+Sstatic __attribute__((always_inline)) inline void ___barrier(void) { asm volatile("" ::: "memory", "cc"); }
+S
+S#  define SCHEDULE_BARRIER      ___barrier
+S#  define FORCE_STORES          ___barrier
+S#  define MEMORY_CHANGED        ___barrier
+S
+S#  define __weak                __attribute__((weak))
+S#  define __svc(...)
+S#  define __align(x)            __attribute__((aligned(x)))
+S
+S#  define __clrex               __builtin_arm_clrex
+S#  define __dmb                 __builtin_arm_dmb
+S#  define __dsb                 __builtin_arm_dsb
+S#  define __isb                 __builtin_arm_isb
+S#  define __wfi                 __builtin_arm_wfi
+S#  define __wfe                 __builtin_arm_wfe
+S#  define __rbit                __builtin_arm_rbit
+S#  define __rev                 __builtin_bswap32
+S#  define __clz                 __builtin_clz
+S
+S#  define ARM_RSR(NAME)         __builtin_arm_rsr(#NAME)
+S#  define ARM_WSR(NAME, VALUE)  __builtin_arm_wsr(#NAME, VALUE)
+S
+S#  define DEFINE_ARM_RSR(NAME)  inline WORD ARM_RSR_ ## NAME()                 noexcept { return ARM_RSR(NAME); }
+S#  define DEFINE_ARM_WSR(NAME)  inline void ARM_WSR_ ## NAME(WORD const value) noexcept { ARM_WSR(NAME, value); }
+S
+S#  define OFFSET_OF(S, M)       __builtin_offsetof(S, M)
+S
+S#  define BREAKPOINT(v)         asm volatile("bkpt %0" :: "i"(v))
+S
+S#  define WRITEONLY             /// not implemented
+S#  define READONLY              const
+S
+S#  define __AT(ADDR)            __attribute__((section(".ARM.__at_" #ADDR)))
+S#  define LOCATE_AT(ADDR)       __AT(ADDR)
+S
+S#  define FORCE_INLINE          __attribute__((always_inline)) inline
+S
+S#  define FILE                  __FILE__
+S#  define FUNC                  __FUNCTION__
+S#  define LINE                  __LINE__
+S# else
+S#  pragma anon_unions
+S#  define PRAGMA(X)             _Pragma(#X)
+S
+S#  define IMPORT(X)             PRAGMA(import(X))
+S
+S#  define SCHEDULE_BARRIER()    __schedule_barrier() ///< Compiler-spezifische Pseudo-Anweisung, um die compiler-bedingte Umsortierung von Befehlen über diese Grenze hinaus zu unterbinden. 
+S#  define FORCE_STORES()        __force_stores()
+S#  define MEMORY_CHANGED()      __memory_changed()
+S
+S#  define DEFINE_ARM_RSR(NAME)  inline WORD ARM_RSR_ ## NAME()                 noexcept { register WORD NAME __asm(#NAME); return NAME; }
+S#  define DEFINE_ARM_WSR(NAME)  inline void ARM_WSR_ ## NAME(WORD const value) noexcept { register WORD NAME __asm(#NAME); NAME = value; }
+S
+S#  define ARM_RSR(NAME)         ARM_RSR_ ## NAME()
+S#  define ARM_WSR(NAME, VALUE)  ARM_WSR_ ## NAME(VALUE)
+S
+S#  define OFFSET_OF(S, M)       offsetof(S, M)
+S
+S#  define BREAKPOINT(n)         __breakpoint(n)
+S
+S#  define WRITEONLY             __writeonly
+S#  define READONLY              const
+S
+S#  define LOCATE_AT(ADDR)       __attribute__((at(ADDR)))
+S
+S#  define FORCE_INLINE          __forceinline
+S
+S#  define FILE                  __MODULE__            ///< Name der aktuellen Datei.
+S
+S#  define FUNC                  __PRETTY_FUNCTION__   ///< Name der aktuellen Funktion.
+S#  define LINE                  __LINE__              ///< Aktuelle Zeilennummer.
+S# endif
+S
+Snamespace std { using nullptr_t = decltype(nullptr); }
+S
+S# if defined(DEBUG) && ! defined(NO_BREAK)
+S#  define DEBUG_BREAK(n)        BREAKPOINT(n)
+S# else
+S#  define DEBUG_BREAK(n)
+S# endif
+S
+S# define __CONCAT(A, B)         A##B
+S# define CONCAT(A, B)           __CONCAT(A, B)
+S
+Stemplate<typename TYPE, unsigned DIM> constexpr unsigned ArrayDim(TYPE const (&)[DIM]) noexcept { return DIM; }
+Stemplate<typename TYPE, unsigned DIM> constexpr unsigned ArrayMax(TYPE const (&)[DIM]) noexcept { return DIM - 1U; }
+S
+Stemplate<typename TYPE, unsigned H, unsigned W> constexpr unsigned MatrixRows(TYPE const (&)[H][W]) noexcept { return H; }
+Stemplate<typename TYPE, unsigned H, unsigned W> constexpr unsigned MatrixCols(TYPE const (&)[H][W]) noexcept { return W; }
+S
+S/// Achtung: Die obigen Varianten zur Bestimmung von Feld oder Matrixdimensionen funktionieren nicht, wenn das Feld
+S/// nicht-statische Member-Variable in einer Klasse ist, weil der this-Zeiger nicht constexpr ist.
+S
+Sinline void * operator new   (unsigned, void * const p) noexcept { return p; }
+Sinline void   operator delete(void *, void *) noexcept { }
+S
+N#endif
+N
+L 9 ".\Inc\Debug\Debug.h" 2
+N
+N# if defined(DEBUG) && ! defined(NO_STACK_CHECK)
+X# if 1L && ! 0L
+N#  define STACK_CHECK_DEFINED
+N
+Nvoid StackCheck() noexcept;
+Nvoid StackCheckInit() noexcept;
+N
+N#  define STACK_CHECK           StackCheck
+N#  define STACK_CHECK_INIT      StackCheckInit
+N# else
+S#  define STACK_CHECK()
+S#  define STACK_CHECK_INIT()
+N# endif
+N
+N# if defined(DEBUG)
+X# if 1L
+N
+N/// Klassentemplate um das Textmuster für Feldauffüllungen in Abhängigkeit von Datentyp unterschiedlich definieren zu können.
+N/// \tparam TYPE ist der Datentyp des Feldes.
+Ntemplate<typename TYPE> struct DbgFillItem;
+N
+Ntemplate<> struct DbgFillItem<UINT08> { DbgFillItem() = delete; static constexpr UINT08 const data =               0xAAU;   };
+Xtemplate<> struct DbgFillItem<uint8_t> { DbgFillItem() = delete; static constexpr uint8_t const data =               0xAAU;   };
+Ntemplate<> struct DbgFillItem<UINT16> { DbgFillItem() = delete; static constexpr UINT16 const data =             0xAAAAU;   };
+Xtemplate<> struct DbgFillItem<uint16_t> { DbgFillItem() = delete; static constexpr uint16_t const data =             0xAAAAU;   };
+Ntemplate<> struct DbgFillItem<UINT32> { DbgFillItem() = delete; static constexpr UINT32 const data =         0xAAAAAAAAU;   };
+Xtemplate<> struct DbgFillItem<uint32_t> { DbgFillItem() = delete; static constexpr uint32_t const data =         0xAAAAAAAAU;   };
+Ntemplate<> struct DbgFillItem<UINT64> { DbgFillItem() = delete; static constexpr UINT64 const data = 0xAAAAAAAAAAAAAAAAULL; };
+Xtemplate<> struct DbgFillItem<uint64_t> { DbgFillItem() = delete; static constexpr uint64_t const data = 0xAAAAAAAAAAAAAAAAULL; };
+N
+Ntemplate<> struct DbgFillItem<SINT08> { DbgFillItem() = delete; static constexpr SINT08 const data =               0x55;    };
+Xtemplate<> struct DbgFillItem<int8_t> { DbgFillItem() = delete; static constexpr int8_t const data =               0x55;    };
+Ntemplate<> struct DbgFillItem<SINT16> { DbgFillItem() = delete; static constexpr SINT16 const data =             0x5555;    };
+Xtemplate<> struct DbgFillItem<int16_t> { DbgFillItem() = delete; static constexpr int16_t const data =             0x5555;    };
+Ntemplate<> struct DbgFillItem<SINT32> { DbgFillItem() = delete; static constexpr SINT32 const data =         0x55555555;    };
+Xtemplate<> struct DbgFillItem<int32_t> { DbgFillItem() = delete; static constexpr int32_t const data =         0x55555555;    };
+Ntemplate<> struct DbgFillItem<SINT64> { DbgFillItem() = delete; static constexpr SINT64 const data = 0x5555555555555555LL;  };
+Xtemplate<> struct DbgFillItem<int64_t> { DbgFillItem() = delete; static constexpr int64_t const data = 0x5555555555555555LL;  };
+N
+Ntemplate<> struct DbgFillItem<char> { DbgFillItem() = delete; static constexpr char const data = '\0'; };
+N
+Ntemplate<typename TYPE> struct DbgFillItem<TYPE *> { DbgFillItem() = delete; static constexpr TYPE * const data = nullptr; };
+N
+N/// Funktion zum Füllen eines Feldes mit definierten Mustern.
+N/// \param array ist das Datenfeld.
+N/// \param dim ist die Dimension des Datenfeldes (Anzahl der Einträge).
+N/// \tparam TYPE ist der Datentyp des Feldes, durch den auch das Muster definiert wird.
+Ntemplate<typename TYPE>
+Nstatic inline void DbgMemFill(TYPE array[], unsigned const dim) noexcept
+N{
+N  auto i = dim;
+N  
+N  while ( --i > 0U )
+N    array[i] = DbgFillItem<TYPE>::data;
+N    
+N  STACK_CHECK();
+X  StackCheck();
+N}
+N
+N/// Funktion zum Füllen eines Feldes mit definierten Mustern.
+N/// \param array ist das Datenfeld.
+N/// \tparam TYPE ist der Datentyp des Feldes, durch den auch das Muster definiert wird.
+N/// \tparam DIM ist die Feldimension.
+Ntemplate<typename TYPE, unsigned DIM>
+Nstatic inline void DbgMemFill(TYPE (& array)[DIM]) noexcept
+N{
+N  DbgMemFill(array, DIM);
+N}
+N
+N#  define DBG_MEM_FILL(A)       DbgMemFill(A)         ///< Auffüllen eines Feldes mit Debug-Mustern, damit ein möglicher Stacküberlauf sicherer erkannt werdne kann.
+N# else
+S#  define DBG_MEM_FILL(A)       ((void)0)             // Füllen eines Arrays mit Debug-Mustern soll in der Release-Variante NICHT erfolgen.
+N# endif
+N
+N# define STATIC_ASSERT_EXT(MSG, ...) static_assert(__VA_ARGS__, MSG)
+N# define STATIC_ASSERT(EXPR)    STATIC_ASSERT_EXT(#EXPR, EXPR)
+N
+N# if defined(DEBUG) && ! defined(NO_ITM)
+X# if 1L && ! 0L
+N#  define ITM_TRACE
+N
+Nvoid ItmPutS(char const * text) noexcept;
+N
+N#  include <Formatter.h>
+L 1 ".\Inc\Utilities\Formatter.h" 1
+N//
+N// Formatter.h
+N//
+N
+N/// \file Formatter.h
+N
+N#ifndef guard_FORMATTER_H
+N# define guard_FORMATTER_H
+N
+N# include <Compiler.h>
+L 1 ".\Inc\Compiler.h" 1
+N//
+N// Compiler.h
+N//
+N
+N/// \file Compiler.h
+N/// Compiler-spezifische Definitions, Macros und Funktionen.
+N/// Um die Quellen auch zu Testzwecken auch mit anderen Compilern (z.B. MSC) übersetzen zu können, müssten in dieser Datei
+N/// mittels bedingter Kompilierung verschiedene Makros für die unterschiedlichen Compiler definiert werden.
+N
+N#if ! defined(guard_COMPILER_H) && defined(__arm__)
+X#if ! 1L && 1L
+S# define guard_COMPILER_H
+S
+S# if ! defined(__cplusplus)
+S#  error C++ only!
+S# endif
+S
+S# if   defined(_DEBUG)  && ! defined(DEBUG)
+S#  define DEBUG
+S# endif
+S
+S# if   defined(RELEASE) &&   defined(DEBUG)
+S#  error You cannot define RELEASE and DEBUG at the same time
+S# endif
+S# if ! defined(RELEASE) && ! defined(DEBUG)
+S#  error You must define ether RELEASE or DEBUG
+S# endif
+S
+S# include <stdint.h>
+S# include <stdbool.h>
+S
+S# define BYTE                   uint8_t               ///< Byte-Datentyp (8 Bits).
+S# define WORD                   uint32_t              ///< Wort-Datentyp (nach ARM-Konvention 32 Bits, d.h. 4 Bytes).
+S# define HWRD                   uint16_t              ///< Halbwort-Datentyp (nach ARM-Konvention 16 Bits, d.h. 2 Bytes).
+S# define DWRD                   uint64_t              ///< Doppelwort-Datentyp (nach ARM-Konvention 8 Bytes).
+S
+S// Nomenklatur <s>INT<nn>:
+S// <s> = U bzw. S für unsigned bzw. signed
+S// <nn> = 08, 12, 32, 64 für 8 bis 64 Bits
+S
+S# define UINT64                 uint64_t              ///< 8 byte unsigned int.
+S# define SINT64                 int64_t               ///< 8 byte signed int.
+S
+S# define UINT32                 uint32_t              ///< 4 byte unsigned int.
+S# define SINT32                 int32_t               ///< 4 byte signed int.
+S
+S# define UINT16                 uint16_t              ///< 2 byte unsigned int.
+S# define SINT16                 int16_t               ///< 2 byte signed int.
+S
+S# define UINT08                 uint8_t               ///< Single byte unsigned int.
+S# define SINT08                 int8_t                ///< Single byte signed int.
+S
+S# include <stddef.h>
+S
+S# if __ARMCC_VERSION >= 6000000
+S#  pragma clang diagnostic ignored "-Wgnu-anonymous-struct"
+S#  pragma clang diagnostic ignored "-Wnested-anon-types"
+S#  pragma clang diagnostic ignored "-Wc++17-compat-mangling"
+S#  pragma clang diagnostic ignored "-Wc++98-compat-pedantic"
+S#  pragma clang diagnostic ignored "-Wc++98-compat"
+S#  pragma clang diagnostic ignored "-Wgcc-compat"
+S
+S#  define IMPORT(X)             asm(".global " #X);
+S
+Sstatic __attribute__((always_inline)) inline void ___barrier(void) { asm volatile("" ::: "memory", "cc"); }
+S
+S#  define SCHEDULE_BARRIER      ___barrier
+S#  define FORCE_STORES          ___barrier
+S#  define MEMORY_CHANGED        ___barrier
+S
+S#  define __weak                __attribute__((weak))
+S#  define __svc(...)
+S#  define __align(x)            __attribute__((aligned(x)))
+S
+S#  define __clrex               __builtin_arm_clrex
+S#  define __dmb                 __builtin_arm_dmb
+S#  define __dsb                 __builtin_arm_dsb
+S#  define __isb                 __builtin_arm_isb
+S#  define __wfi                 __builtin_arm_wfi
+S#  define __wfe                 __builtin_arm_wfe
+S#  define __rbit                __builtin_arm_rbit
+S#  define __rev                 __builtin_bswap32
+S#  define __clz                 __builtin_clz
+S
+S#  define ARM_RSR(NAME)         __builtin_arm_rsr(#NAME)
+S#  define ARM_WSR(NAME, VALUE)  __builtin_arm_wsr(#NAME, VALUE)
+S
+S#  define DEFINE_ARM_RSR(NAME)  inline WORD ARM_RSR_ ## NAME()                 noexcept { return ARM_RSR(NAME); }
+S#  define DEFINE_ARM_WSR(NAME)  inline void ARM_WSR_ ## NAME(WORD const value) noexcept { ARM_WSR(NAME, value); }
+S
+S#  define OFFSET_OF(S, M)       __builtin_offsetof(S, M)
+S
+S#  define BREAKPOINT(v)         asm volatile("bkpt %0" :: "i"(v))
+S
+S#  define WRITEONLY             /// not implemented
+S#  define READONLY              const
+S
+S#  define __AT(ADDR)            __attribute__((section(".ARM.__at_" #ADDR)))
+S#  define LOCATE_AT(ADDR)       __AT(ADDR)
+S
+S#  define FORCE_INLINE          __attribute__((always_inline)) inline
+S
+S#  define FILE                  __FILE__
+S#  define FUNC                  __FUNCTION__
+S#  define LINE                  __LINE__
+S# else
+S#  pragma anon_unions
+S#  define PRAGMA(X)             _Pragma(#X)
+S
+S#  define IMPORT(X)             PRAGMA(import(X))
+S
+S#  define SCHEDULE_BARRIER()    __schedule_barrier() ///< Compiler-spezifische Pseudo-Anweisung, um die compiler-bedingte Umsortierung von Befehlen über diese Grenze hinaus zu unterbinden. 
+S#  define FORCE_STORES()        __force_stores()
+S#  define MEMORY_CHANGED()      __memory_changed()
+S
+S#  define DEFINE_ARM_RSR(NAME)  inline WORD ARM_RSR_ ## NAME()                 noexcept { register WORD NAME __asm(#NAME); return NAME; }
+S#  define DEFINE_ARM_WSR(NAME)  inline void ARM_WSR_ ## NAME(WORD const value) noexcept { register WORD NAME __asm(#NAME); NAME = value; }
+S
+S#  define ARM_RSR(NAME)         ARM_RSR_ ## NAME()
+S#  define ARM_WSR(NAME, VALUE)  ARM_WSR_ ## NAME(VALUE)
+S
+S#  define OFFSET_OF(S, M)       offsetof(S, M)
+S
+S#  define BREAKPOINT(n)         __breakpoint(n)
+S
+S#  define WRITEONLY             __writeonly
+S#  define READONLY              const
+S
+S#  define LOCATE_AT(ADDR)       __attribute__((at(ADDR)))
+S
+S#  define FORCE_INLINE          __forceinline
+S
+S#  define FILE                  __MODULE__            ///< Name der aktuellen Datei.
+S
+S#  define FUNC                  __PRETTY_FUNCTION__   ///< Name der aktuellen Funktion.
+S#  define LINE                  __LINE__              ///< Aktuelle Zeilennummer.
+S# endif
+S
+Snamespace std { using nullptr_t = decltype(nullptr); }
+S
+S# if defined(DEBUG) && ! defined(NO_BREAK)
+S#  define DEBUG_BREAK(n)        BREAKPOINT(n)
+S# else
+S#  define DEBUG_BREAK(n)
+S# endif
+S
+S# define __CONCAT(A, B)         A##B
+S# define CONCAT(A, B)           __CONCAT(A, B)
+S
+Stemplate<typename TYPE, unsigned DIM> constexpr unsigned ArrayDim(TYPE const (&)[DIM]) noexcept { return DIM; }
+Stemplate<typename TYPE, unsigned DIM> constexpr unsigned ArrayMax(TYPE const (&)[DIM]) noexcept { return DIM - 1U; }
+S
+Stemplate<typename TYPE, unsigned H, unsigned W> constexpr unsigned MatrixRows(TYPE const (&)[H][W]) noexcept { return H; }
+Stemplate<typename TYPE, unsigned H, unsigned W> constexpr unsigned MatrixCols(TYPE const (&)[H][W]) noexcept { return W; }
+S
+S/// Achtung: Die obigen Varianten zur Bestimmung von Feld oder Matrixdimensionen funktionieren nicht, wenn das Feld
+S/// nicht-statische Member-Variable in einer Klasse ist, weil der this-Zeiger nicht constexpr ist.
+S
+Sinline void * operator new   (unsigned, void * const p) noexcept { return p; }
+Sinline void   operator delete(void *, void *) noexcept { }
+S
+N#endif
+N
+L 11 ".\Inc\Utilities\Formatter.h" 2
+N
+Nclass Formatter;
+N
+Ntemplate<typename TYPE> inline void PrintObj(Formatter & fmt, TYPE const & obj) noexcept { obj.ToString(fmt); }
+N
+N/// Klasse zur allgemeinen Ausgabeformatierung.
+N/// Dieser Klasse ermöglicht es, beliebige Datentypen in einen Text umzuwandeln, d.h. sie menschenlesbar darzustellen.
+N/// Hierzu wird ausgabeseitig ein (sequentieller) Bytedatenstrom erzeugt, welcher die ASCII-Zeichen der Textdarstellung beinhaltet.
+N/// Die zu formatierenden Daten werden nacheinander, in der Reihenfolge des entspr. Funktionsaufrufs dargestellt.
+Nclass Formatter 
+N{
+N  public:
+N
+N  class ISink
+N  {
+N    protected:
+N    
+N    constexpr ISink() noexcept { }
+N    
+N    public:
+N    
+N    ISink(ISink const &) = delete;
+N    ISink(ISink      &&) = delete;
+N    
+N    virtual ~ISink() = default;
+N    
+N    ISink & operator = (ISink const &) = delete;
+N    ISink & operator = (ISink      &&) = delete;
+N
+N    virtual void WriteByte(BYTE chr) noexcept = 0;    
+X    virtual void WriteByte(uint8_t chr) noexcept = 0;    
+N  };
+N  
+N  class SinkFromBuf : public Formatter::ISink
+N  {
+N    public:
+N    
+N    SinkFromBuf(char buffer[], unsigned const dim) noexcept : 
+N      string(buffer), 
+N      max(dim - 1U) 
+N    { 
+N      Reset(); 
+N    }
+N
+N    template<unsigned DIM>
+N    explicit SinkFromBuf(char (& buffer)[DIM]) noexcept : SinkFromBuf(buffer, DIM) { }
+N    
+N    SinkFromBuf(SinkFromBuf const &) = delete;
+N    SinkFromBuf(SinkFromBuf      &&) = delete;
+N    
+N    virtual ~SinkFromBuf() override = default;
+N
+N    SinkFromBuf & operator = (SinkFromBuf const &) = delete;
+N    SinkFromBuf & operator = (SinkFromBuf      &&) = delete;
+N    
+N    operator char const * () const noexcept { return GetString(); }
+N    operator unsigned     () const noexcept { return GetLength(); }
+N    
+N    unsigned GetLength() const noexcept { return length; }
+N    
+N    char const * GetString() const noexcept { return string; }
+N    
+N    virtual void WriteByte(BYTE const chr) noexcept override 
+X    virtual void WriteByte(uint8_t const chr) noexcept override 
+N    {
+N      if ( length < max ) 
+N      {
+N        string[length++] = chr;
+N        string[length  ] = '\0';
+N      }
+N    }
+N    
+N    void Reset() { length = 0U; *string = '\0'; }
+N
+N    private:
+N    
+N    char * const string;
+N    unsigned const max;
+N    unsigned length;
+N  };
+N  
+N  /// Ctor.
+N  /// \param[in] put ist die Datensenke zu Aufnahme des Ausgabe-Datenstroms (ASCII-Zeichen, nicht-darstellbare Zeichen werden kodiert).
+N  explicit Formatter(ISink & intrf) noexcept : sink(intrf) { }
+N
+N  Formatter(Formatter const &) = delete;
+N  Formatter(Formatter      &&) = delete;
+N
+N  virtual ~Formatter() = default;
+N
+N  Formatter & operator = (Formatter const &) = delete;
+N  Formatter & operator = (Formatter      &&) = delete;
+N
+N  /// Datentype zur Darstellung der Zahlenbasis bei der Ausgabe numerischer Werte.
+N  enum class RadixMdType
+N  {
+N    printDec,                   ///< Dezimale Zahlendarstellung.
+N    printHex,                   ///< Hexadezimale Zahlendarstellung.    
+N    autoMode                    ///< Automatische Umschaltung zwischen hexadezimaler (bei führender \c 0x) und dezimaler Darstellung.
+N  };
+N
+N  /// Allgemeine Formatierungsangabe.
+N  /// Diese Aufzählungen lassen sich wie Daten und Objekte in die Ausgabe einfügen. Sie bewirken
+N  /// nicht, dass Zeichen in den Ausgabestrom hinzugefügt werden, sondern verändern die nachfolgende Art der Formatierung
+N  /// bzw. bewirken sonstige Sonderfunktionen.
+N  enum class FmtModeType
+N  {
+N    showSign,                   ///< Zahlenwerte immer mit Vorzeichen (Minus- oder Plus-Zeichen) darstellen.
+N    nakedNum,                   ///< Zahlenwerte nur wenn negativ mit Vorzeichen (Minus-Zeichem) darstellen.
+N    plainHex,                   ///< Hexadezimale Zahlendarstellung ohne führendes \c 0x aktivieren.
+N    hexMode,                    ///< Hexadezimale Zahlendarstellung aktivieren.
+N    decMode,                    ///< Dezimale Zahlendarstellung aktivieren.   
+N    autoHex                     ///< Automatische hexdezimal/dezimal-Umschaltung aktivieren.
+N  };
+N
+N  /// Wrapper, um einzelnes Zeichen codiert (in Hochkommas, Steuerzeichen werden nach der C-Konvention expandiert) auszugeben.
+N  class AsChr final
+N  {
+N    public:
+N
+N    explicit
+N    constexpr AsChr(BYTE  const arg)   noexcept : chr(arg)     { }
+X    constexpr AsChr(uint8_t  const arg)   noexcept : chr(arg)     { }
+N    constexpr AsChr(AsChr const & org) noexcept : chr(org.chr) { }
+N    constexpr AsChr(AsChr      && org) noexcept : chr(org.chr) { }
+N
+N    ~AsChr() = default;
+N    
+N    AsChr & operator = (AsChr const &) = delete;
+N    AsChr & operator = (AsChr      &&) = delete;
+N
+N    BYTE GetChr() const noexcept { return chr; }
+X    uint8_t GetChr() const noexcept { return chr; }
+N
+N    void ToString(Formatter & fmt) const noexcept { fmt.PrintChr(*this); }
+N
+N    private:
+N
+N    BYTE const chr;
+X    uint8_t const chr;
+N  };
+N
+N  /// Wrapper um einen Text-String codiert (in Hochkommas, Steuerzeichen werden nach der C-Konvention expandiert) auszugeben.
+N  class AsTxt final
+N  {
+N    public:
+N
+N    explicit
+N    constexpr AsTxt(char const arg[])  noexcept : text(arg)   { }
+N    explicit
+N    constexpr AsTxt(BYTE const arg[])  noexcept : data(arg)   { }
+X    constexpr AsTxt(uint8_t const arg[])  noexcept : data(arg)   { }
+N    constexpr AsTxt(AsTxt const & org) noexcept : text(org.text) { }
+N    constexpr AsTxt(AsTxt      && org) noexcept : text(org.text) { }
+N
+N    ~AsTxt() = default;
+N
+N    AsTxt & operator = (AsTxt const &) = delete;
+N    AsTxt & operator = (AsTxt      &&) = delete;
+N
+N    char const * GetTxt() const noexcept { return text; }
+N
+N    void ToString(Formatter & fmt) const noexcept
+N    { 
+N      auto const tmp(GetTxt());
+N      
+N      if ( tmp == nullptr )
+N        fmt.PrintTxt("nullptr", 1);
+N      else
+N        fmt.PrintTxtQuoted(tmp); 
+N    }
+N
+N    private:
+N
+N    union {
+N      char const * text;
+N      BYTE const * data;
+X      uint8_t const * data;
+N    };
+N  };
+N
+N  /// Wrapper um Anzahl der Stellen bei numerischen Werten anzugeben.
+N  class Digits final
+N  {
+N    public:
+N
+N    explicit
+N    constexpr Digits(int const arg)      noexcept : num(arg)   { }
+N    constexpr Digits(Digits const & org) noexcept : num(org.num) { }
+N    constexpr Digits(Digits      && org) noexcept : num(org.num) { }
+N
+N    ~Digits() = default;
+N    
+N    Digits & operator = (Digits const &) = delete;
+N    Digits & operator = (Digits      &&) = delete;
+N
+N    int GetNum() const noexcept { return num; }
+N
+N    void ToString(Formatter & fmt) const noexcept { fmt.SetNumDigits(GetNum()); }
+N
+N    private:
+N
+N    int const num;
+N  };
+N
+N  /// Wrapper um Feldbreite anzugeben.
+N  class Length final
+N  {
+N    public:
+N
+N    explicit
+N    constexpr Length(int const arg)      : num(arg)   { }
+N    constexpr Length(Length const & org) : num(org.num) { }
+N    constexpr Length(Length      && org) : num(org.num) { }
+N
+N    ~Length() = default;
+N
+N    Length & operator = (Length const &) = delete;
+N    Length & operator = (Length      &&) = delete;
+N
+N    int GetNum() const noexcept { return num; }
+N
+N    void ToString(Formatter & fmt) const noexcept { fmt.SetMinLength(GetNum()); }
+N
+N    private:
+N
+N    int const num;
+N  };
+N
+N  /// UINT32 dezimal darstellen.
+N  /// \param[in] value ist der darzustellende Wert.
+N  /// \param[in] digits gibt die Mindestanzahl der Stellen an, ggf. wird mit Nullen linksseitig aufgefüllt.
+N  /// \param[in] length gibt die Feldbreite an, ggf. wird mit Leerzeichen linksseitig aufgefüllt.
+N  /// \param[in] pm ist \c true, wenn der Wert mit führendem Vorzeichen (immer \c '+') dargestellt werden soll.
+N  void PrintUINT32Dec(UINT32         value, int digits, int length, bool pm = false) noexcept;
+X  void PrintUINT32Dec(uint32_t         value, int digits, int length, bool pm = false) noexcept;
+N
+N  void PrintUINT64Dec(UINT64 const & value, int digits, int length, bool pm = false) noexcept;
+X  void PrintUINT64Dec(uint64_t const & value, int digits, int length, bool pm = false) noexcept;
+N
+N  /// SINT32 dezimal darstellen.
+N  /// \param[in] value ist der darzustellende Wert.
+N  /// \param[in] digits gibt die Mindestanzahl der Stellen an, ggf. wird mit Nullen linksseitig aufgefüllt.
+N  /// \param[in] length gibt die Feldbreite an, ggf. wird mit Leerzeichen linksseitig aufgefüllt.
+N  /// \param[in] pm ist \c true, wenn der Wert mit führendem Vorzeichen (entweder \c '+' oder \c '-') dargestellt werden soll.
+N  void PrintSINT32Dec(SINT32         value, int digits, int length, bool pm) noexcept;
+X  void PrintSINT32Dec(int32_t         value, int digits, int length, bool pm) noexcept;
+N
+N  void PrintSINT64Dec(SINT64 const & value, int digits, int length, bool pm) noexcept;
+X  void PrintSINT64Dec(int64_t const & value, int digits, int length, bool pm) noexcept;
+N
+N  /// UINT32 hexadezimal hexadarstellen.
+N  /// \param[in] value ist der darzustellende Wert.
+N  /// \param[in] digits gibt die Mindestanzahl der Stellen an, ggf. wird mit Nullen linksseitig aufgefüllt.
+N  /// \param[in] length gibt die Feldbreite an, ggf. wird mit Leerzeichen linksseitig aufgefüllt.
+N  /// \param[in] xp ist \c true, wenn der Hex-Wert mit führendem \c 0x dargestellt werden soll.
+N  void PrintUINT32Hex(UINT32         value, int digits, int length, bool xp) noexcept;
+X  void PrintUINT32Hex(uint32_t         value, int digits, int length, bool xp) noexcept;
+N
+N  void PrintSINT32Hex(SINT32 const   value, int digits, int length, bool xp) noexcept
+X  void PrintSINT32Hex(int32_t const   value, int digits, int length, bool xp) noexcept
+N  {
+N    Int32Type const tmp = { value };
+N      
+N    PrintUINT32Hex(tmp.u, digits, length, xp);
+N  }
+N  
+N  void PrintUINT64Hex(UINT64 const & value, int digits, int length, bool xp) noexcept;
+X  void PrintUINT64Hex(uint64_t const & value, int digits, int length, bool xp) noexcept;
+N
+N  void PrintSINT64Hex(SINT64 const & value, int digits, int length, bool xp) noexcept
+X  void PrintSINT64Hex(int64_t const & value, int digits, int length, bool xp) noexcept
+N  {
+N    Int64Type const tmp = { value };
+N      
+N    PrintUINT64Hex(tmp.u, digits, length, xp);
+N  }
+N
+N  /// UINT32 dezimal darstellen.
+N  /// \param[in] value ist der darzustellende Wert.
+N  /// \param[in] digits gibt die Mindestanzahl der Stellen an, ggf. wird mit Nullen linksseitig aufgefüllt.
+N  void PrintUINT32Dec(UINT32 const   value, int const digits) noexcept { PrintUINT32Dec(value, digits, minlen, sign); }
+X  void PrintUINT32Dec(uint32_t const   value, int const digits) noexcept { PrintUINT32Dec(value, digits, minlen, sign); }
+N
+N  void PrintUINT64Dec(UINT64 const & value, int const digits) noexcept { PrintUINT64Dec(value, digits, minlen, sign); }
+X  void PrintUINT64Dec(uint64_t const & value, int const digits) noexcept { PrintUINT64Dec(value, digits, minlen, sign); }
+N
+N  /// SINT32 dezimal darstellen.
+N  /// \param[in] value ist der darzustellende Wert.
+N  /// \param[in] digits gibt die Mindestanzahl der Stellen an, ggf. wird mit Nullen linksseitig aufgefüllt.
+N  void PrintSINT32Dec(SINT32 const   value, int const digits) noexcept { PrintSINT32Dec(value, digits, minlen, sign); }
+X  void PrintSINT32Dec(int32_t const   value, int const digits) noexcept { PrintSINT32Dec(value, digits, minlen, sign); }
+N
+N  void PrintSINT64Dec(SINT64 const & value, int const digits) noexcept { PrintSINT64Dec(value, digits, minlen, sign); }
+X  void PrintSINT64Dec(int64_t const & value, int const digits) noexcept { PrintSINT64Dec(value, digits, minlen, sign); }
+N
+N  /// UINT32 hexadezimal hexadarstellen.
+N  /// \param[in] value ist der darzustellende Wert.
+N  /// \param[in] digits gibt die Mindestanzahl der Stellen an, ggf. wird mit Nullen linksseitig aufgefüllt.
+N  void PrintUINT32Hex(UINT32 const   value, int const digits) noexcept { PrintUINT32Hex(value, digits, minlen, mark); }
+X  void PrintUINT32Hex(uint32_t const   value, int const digits) noexcept { PrintUINT32Hex(value, digits, minlen, mark); }
+N
+N  void PrintSINT32Hex(SINT32 const   value, int const digits) noexcept { PrintSINT32Hex(value, digits, minlen, mark); }
+X  void PrintSINT32Hex(int32_t const   value, int const digits) noexcept { PrintSINT32Hex(value, digits, minlen, mark); }
+N
+N  void PrintUINT64Hex(UINT64 const & value, int const digits) noexcept { PrintUINT64Hex(value, digits, minlen, mark); }
+X  void PrintUINT64Hex(uint64_t const & value, int const digits) noexcept { PrintUINT64Hex(value, digits, minlen, mark); }
+N
+N  void PrintSINT64Hex(SINT64 const & value, int const digits) noexcept { PrintSINT64Hex(value, digits, minlen, mark); }
+X  void PrintSINT64Hex(int64_t const & value, int const digits) noexcept { PrintSINT64Hex(value, digits, minlen, mark); }
+N
+N  /// UINT32 dezimal darstellen.
+N  /// \param[in] value ist der darzustellende Wert.
+N  void PrintUINT32Dec(UINT32 const   value) noexcept { PrintUINT32Dec(value, mindig); }
+X  void PrintUINT32Dec(uint32_t const   value) noexcept { PrintUINT32Dec(value, mindig); }
+N
+N  void PrintUINT64Dec(UINT64 const & value) noexcept { PrintUINT64Dec(value, mindig); }
+X  void PrintUINT64Dec(uint64_t const & value) noexcept { PrintUINT64Dec(value, mindig); }
+N  
+N  /// SINT32 dezimal darstellen (Anzahl der Stellen wie zuvor angegeben).
+N  /// \param[in] value ist der darzustellende Wert.
+N  void PrintSINT32Dec(SINT32 const   value) noexcept { PrintSINT32Dec(value, mindig); }
+X  void PrintSINT32Dec(int32_t const   value) noexcept { PrintSINT32Dec(value, mindig); }
+N
+N  void PrintSINT64Dec(SINT64 const & value) noexcept { PrintSINT64Dec(value, mindig); }
+X  void PrintSINT64Dec(int64_t const & value) noexcept { PrintSINT64Dec(value, mindig); }
+N
+N  /// UINT32 hexadezimal hexadarstellen (Anzahl der Stellen wie zuvor angegeben).
+N  /// \param[in] value ist der darzustellende Wert.
+N  void PrintUINT32Hex(UINT32 const   value) noexcept { PrintUINT32Hex(value, mindig); }
+X  void PrintUINT32Hex(uint32_t const   value) noexcept { PrintUINT32Hex(value, mindig); }
+N
+N  void PrintSINT32Hex(SINT32 const   value) noexcept { PrintSINT32Hex(value, mindig); }
+X  void PrintSINT32Hex(int32_t const   value) noexcept { PrintSINT32Hex(value, mindig); }
+N
+N  void PrintUINT64Hex(UINT64 const & value) noexcept { PrintUINT64Hex(value, mindig); }
+X  void PrintUINT64Hex(uint64_t const & value) noexcept { PrintUINT64Hex(value, mindig); }
+N
+N  void PrintSINT64Hex(SINT64 const & value) noexcept { PrintSINT64Hex(value, mindig); }
+X  void PrintSINT64Hex(int64_t const & value) noexcept { PrintSINT64Hex(value, mindig); }
+N
+N  /// UINT32 darstellen (je nach aktuellem Modus dezimal oder hexadezimal).
+N  /// \param[in] value ist der darzustellende Wert.
+N  void PrintUINT32(UINT32 const value) noexcept
+X  void PrintUINT32(uint32_t const value) noexcept
+N  {
+N    if ( HexFlag() )
+N      PrintUINT32Hex(value);
+N    else
+N      PrintUINT32Dec(value);
+N  }
+N
+N  void PrintUINT64(UINT64 const & value) noexcept
+X  void PrintUINT64(uint64_t const & value) noexcept
+N  {
+N    if ( HexFlag() )
+N      PrintUINT64Hex(value);
+N    else
+N      PrintUINT64Dec(value);
+N  }
+N
+N  /// SINT32 darstellen (je nach aktuellem Modus dezimal oder hexadezimal).
+N  /// \param[in] value ist der darzustellende Wert.
+N  void PrintSINT32(SINT32 const   value) noexcept
+X  void PrintSINT32(int32_t const   value) noexcept
+N  {
+N    if ( HexFlag() )
+N      PrintSINT32Hex(value);
+N    else
+N      PrintSINT32Dec(value);
+N  }
+N
+N  void PrintSINT64(SINT64 const & value) noexcept
+X  void PrintSINT64(int64_t const & value) noexcept
+N  {
+N    if ( HexFlag() )
+N      PrintSINT64Hex(value);
+N    else
+N      PrintSINT64Dec(value);
+N  }
+N
+N  void PrintArr(BYTE const arr[], unsigned dim, char sep) noexcept;
+X  void PrintArr(uint8_t const arr[], unsigned dim, char sep) noexcept;
+N
+N  template<unsigned DIM>
+N  inline void PrintArr(BYTE const (& arr)[DIM], char const sep) noexcept { PrintArr(arr, DIM, sep); }
+X  inline void PrintArr(uint8_t const (& arr)[DIM], char const sep) noexcept { PrintArr(arr, DIM, sep); }
+N
+N  /// ASCII-Zeichen darstellen.
+N  /// \param[in] chr ist der ASCII-Code des darzustellenden Zeichens.
+N  void PrintChr(BYTE const chr) noexcept { WriteByte(chr); ResetWidth(); }
+X  void PrintChr(uint8_t const chr) noexcept { WriteByte(chr); ResetWidth(); }
+N
+N  /// ASCII-Zeichen in einfachen Anführungszeichen darstellen.
+N  /// \param[in] value stellt den Zeichencode dar.
+N  void PrintChrQuoted(BYTE const chr) noexcept;
+X  void PrintChrQuoted(uint8_t const chr) noexcept;
+N
+N  /// ASCII-Zeichen in einfachen Anführungszeichen darstellen.
+N  /// \param[in] value stellt den Zeichencode dar.
+N  void PrintChr(AsChr const & value) noexcept { return PrintChrQuoted(value.GetChr()); }
+N
+N  /// ASCIIZ-String (zeichenweise, linksbuendig) darstellen.
+N  /// \param[in] text zeigt auf den darzustellenden Text.
+N  /// \param[in] length gibt die minimale Feldbreite an, übersteuert die Einstellung von Formater::SetMinLength()
+N  void PrintTxt(char const * text, int length) noexcept;
+N
+N  /// ASCIIZ-String (zeichenweise) darstellen.
+N  /// \param[in] text zeigt auf den darzustellenden Text (Steuerzeichen möglich, werden jedoch sinnvoll dargestellt).
+N  void PrintTxt(char const * const text) noexcept { PrintTxt(text, minlen); ResetWidth(); }
+N
+N  /// ASCIIZ-String mit CH_DQUOTE einschliessen und darstellen, Steuerzeichen wie CR oder LF werden nach der C-Konvention expandiert.
+N  /// \param[in] text zeigt auf den darzustellenden Text (Steuerzeichen erlaubt und werden sinnvoll dargestellt).
+N  void PrintTxtQuoted(char const * text) noexcept;
+N  
+N  /// ASCIIZ-String mit CH_DQUOTE einschliessen und darstellen, Steuerzeichen wie CR oder LF werden nach der C-Konvention expandiert.
+N  /// \param[in] value beinhaltet den darzustellenden Text (Steuerzeichen erlaubt und werden sinnvoll dargestellt).
+N  void PrintTxt(AsTxt const & value) noexcept { value.ToString(*this); }
+N
+N  void Print(UINT64           const   value) noexcept { PrintUINT64(value); }
+X  void Print(uint64_t           const   value) noexcept { PrintUINT64(value); }
+N
+N  void Print(SINT64           const & value) noexcept { PrintSINT64(value); }
+X  void Print(int64_t           const & value) noexcept { PrintSINT64(value); }
+N
+N  /// \copydoc PrintUINT32(UINT32)
+N  void Print(UINT32           const   value) noexcept { PrintUINT32(value); }
+X  void Print(uint32_t           const   value) noexcept { PrintUINT32(value); }
+N
+N  /// \copydoc PrintSINT32(SINT32)
+N  void Print(SINT32           const   value) noexcept { PrintSINT32(value); }
+X  void Print(int32_t           const   value) noexcept { PrintSINT32(value); }
+N
+N  /// UINT16 darstellen (je nach aktuellem Modus dezimal oder hexadezimal).
+N  /// \param[in] value ist der darzustellende Wert.
+N  void Print(UINT16           const   value) noexcept { PrintUINT32(value); }
+X  void Print(uint16_t           const   value) noexcept { PrintUINT32(value); }
+N
+N  /// SINT16 darstellen (je nach aktuellem Modus dezimal oder hexadezimal).
+N  /// \param[in] value ist der darzustellende Wert.
+N  void Print(SINT16           const   value) noexcept { PrintSINT32(value); }
+X  void Print(int16_t           const   value) noexcept { PrintSINT32(value); }
+N
+N  /// UINT08 darstellen (je nach aktuellem Modus dezimal oder hexadezimal).
+N  /// \param[in] value ist der darzustellende Wert.
+N  void Print(UINT08           const   value) noexcept { PrintUINT32(value); }
+X  void Print(uint8_t           const   value) noexcept { PrintUINT32(value); }
+N
+N  /// SINT08 darstellen (je nach aktuellem Modus dezimal oder hexadezimal).
+N  /// \param[in] value ist der darzustellende Wert.
+N  void Print(SINT08           const   value) noexcept { PrintSINT32(value); }
+X  void Print(int8_t           const   value) noexcept { PrintSINT32(value); }
+N
+N  /// ASCIIZ-String ohne Anführungszeichen ausgeben.
+N  /// \param[in] text zeigt auf den ASCIIZ-String.
+N  /// \note Der auszugebende String sollte nur darstellbare Zeichen beinhalten.
+N  void Print(char const *     const   text  ) noexcept { PrintTxt(text); }
+N
+N  /// ASCII-Zeichen ohne Anführungszeichen ausgeben.
+N  /// \param[in] value ist der ASCII-Code des Zeichens.
+N  /// \note Das auszugebende Zeichen sollte darstellbar sein.
+N  void Print(char             const   value) noexcept { PrintChr(value); }
+N
+N  void Print(FmtModeType      const   value) noexcept { SetFormat(value); }
+N  void Print(RadixMdType      const   value) noexcept { SetRadix(value); }
+N
+N  /// Wert eines Boole'sche Variable ausgeben.
+N  /// \param[in] value ist der Wert der Boole'schen Variable .
+N  void Print(bool             const   value) noexcept { PrintTxt(value ? "true" : "false", 1); }
+N
+N  /// Generische Print-Funktion.
+N  /// \param[in] obj ist die Referenz auf die Instanz des darzustellenden Objektes
+N  /// \tparam TYPE ist der Datentyp des darzustellenden Objektes (\b muss eine Funktion \c ToString(Formater &) 
+N  /// oder (alternativ) \c ToString(IPutNoThrow<BYTE> &) implementieren.
+N  template<typename TYPE> void Print(TYPE const & obj) noexcept { PrintObj(*this, obj); }
+N
+N  template<typename TYPE, typename ... ARGS> void Print(TYPE const & obj, ARGS const & ... args) noexcept
+N  {
+N    Print(obj);
+N    Print(args ...);
+N  }
+N
+N  /// Zahlenbasis kommandieren (persistent, d.h. bleibt gültig bis zum nächsten Aufruf).
+N  /// \param[in] mode gibt die Zahlenbasis an.
+N  void SetRadix(RadixMdType const mode) noexcept { radix = mode; }
+N
+N  RadixMdType GetRadix() const noexcept { return radix; }
+N
+N  /// Vorzeichenmodus kommandieren.
+N  /// \param[in] mode ist \c true, wenn alle Dezimalzahlen (auch die positiven oder 0) immer mit Vorzeichen ausgegben werden sollen.
+N  void SetSign(bool const mode = true) noexcept { sign = mode; }
+N
+N  /// Kommandieren, ob hexadezimale Darstellungen immer ein führendes "0x" haben sollen.
+N  /// \param[in] mode ist \c true, wenn alle hexadezimale Darstellungen mit "0x" beginnen sollen.
+N  void SetPrefix(bool const mode = true) noexcept { mark = mode; }
+N
+N  /// Feldbreite einstellen (wirkt nur einmal für die nächste Darstellung).
+N  /// \param[in] length ist die minimale Feldbreite.
+N  void SetMinLength(int const length) noexcept { minlen = length; }
+N  
+N  /// Anzahl der Stellen angeben (wirkt nur einmal für die nächste Darstellung).
+N  /// Ganze Zahlen können mit führenden Nullen dargestellt werden. Diese Funktion gibt an, über wieviele Stellen die
+N  /// Darstellung mindestens verfügen soll. Ggf. wird dann linksseitig mit Nullen aufgefüllt. Es ist jedoch auch möglich, dass
+N  /// mehr Stellen als angegeben zur fehlerfreien Darstellung verwendet werden müssen, z.B. dann wenn die Zahl größer ist, als
+N  /// durch die angegebene Stellenanzahl definiert.
+N  /// \param[in] digits gibt die Mindestanzahl der Stellen an.
+N  void SetNumDigits(int const digits) noexcept { mindig = digits; }
+N
+N  /// Formatinformation kommandieren.
+N  /// \param[in] mode beinhaltet die Formatinformation.
+N  void SetFormat(FmtModeType mode) noexcept;
+N
+N  void SetCoding(bool const mode) noexcept { coding = mode; }
+N
+N  bool GetCoding() const noexcept { return coding; }
+N
+N  /// Rückstellen der Stellenanzahl und Breite.
+N  void ResetWidth() noexcept
+N  {
+N    mindig = 0;
+N    minlen = 0;
+N  }
+N
+N  void WriteByte(BYTE chr) noexcept;
+X  void WriteByte(uint8_t chr) noexcept;
+N
+N  void WriteByteRepeated(BYTE const chr, int n) noexcept
+X  void WriteByteRepeated(uint8_t const chr, int n) noexcept
+N  {
+N    while ( n-- > 0 ) 
+N      WriteByte(chr);
+N  }
+N  
+N  private:
+N
+N  bool HexFlag() const noexcept { return radix == RadixMdType::printHex || (radix == RadixMdType::autoMode && prefixed); }
+N
+N  typedef union {
+N    SINT32 s;
+X    int32_t s;
+N    UINT32 u;
+X    uint32_t u;
+N  } Int32Type;
+N
+N  typedef union {
+N    SINT64 s;
+X    int64_t s;
+N    UINT64 u;
+X    uint64_t u;
+N  } Int64Type;
+N
+N  ISink & sink;
+N  int mindig = 1;               ///< Mindestanzahl der Ziffern bei numerischer Darstellung (wird verwendet, wenn keine Mindestanzahl explizit angegeben wurde).
+N  int minlen = 1;               ///< Default-Wert der aktuellen Mindestfeldbreite (wird verwendet, wenn keine Mindestfeldbreite explizit angegeben wurde).
+N  RadixMdType radix = RadixMdType::autoMode; ///< Aktuelle Modus um zwischen dezimaler und hexadezimaler Darstellung zu wählen.
+N  BYTE history[2] { '\0', '\0' }; ///< Puffer für die letzten beiden ausgegbenen Zeichen.
+X  uint8_t history[2] { '\0', '\0' }; 
+N  bool prefixed = false;        ///< Flag; \c true, wenn \c 0x zuletzt ausgegeben.
+N  bool mark = true;             ///< Flag; \c true, wenn hexadezimale Zahlen immer mit führendem \c 0x dargestellt werden sollen.
+N  bool sign = false;            ///< Vorzeichen-Flag (ist \c true, wenn immer mit Vorzeichen dargestellt wird, es sein denn es wird explizit übersteuert).
+N  bool coding = true;
+N  HWRD reserved = 0;
+X  uint16_t reserved = 0;
+N};
+N
+N#endif
+L 82 ".\Inc\Debug\Debug.h" 2
+N
+NFormatter & ItmFmt() noexcept;
+N
+Ntemplate<typename ... ARGS> 
+Ninline void ItmPrint(ARGS const & ... args) noexcept
+N{
+N  auto & fmt(ItmFmt());
+N  
+N  fmt.Print(args ...);
+N  
+N  STACK_CHECK();
+X  StackCheck();
+N}
+N#  include <Cortex.h>
+L 1 ".\Inc\Cortex\Cortex.h" 1
+N//
+N// Cortex.H
+N//
+N
+N/// \file Cortex.h
+N/// %Cortex-spezifische Funktionen.
+N
+N#ifndef guard_CORTEX_H
+N# define guard_CORTEX_H
+N
+N# include <Compiler.h>
+L 1 ".\Inc\Compiler.h" 1
+N//
+N// Compiler.h
+N//
+N
+N/// \file Compiler.h
+N/// Compiler-spezifische Definitions, Macros und Funktionen.
+N/// Um die Quellen auch zu Testzwecken auch mit anderen Compilern (z.B. MSC) übersetzen zu können, müssten in dieser Datei
+N/// mittels bedingter Kompilierung verschiedene Makros für die unterschiedlichen Compiler definiert werden.
+N
+N#if ! defined(guard_COMPILER_H) && defined(__arm__)
+X#if ! 1L && 1L
+S# define guard_COMPILER_H
+S
+S# if ! defined(__cplusplus)
+S#  error C++ only!
+S# endif
+S
+S# if   defined(_DEBUG)  && ! defined(DEBUG)
+S#  define DEBUG
+S# endif
+S
+S# if   defined(RELEASE) &&   defined(DEBUG)
+S#  error You cannot define RELEASE and DEBUG at the same time
+S# endif
+S# if ! defined(RELEASE) && ! defined(DEBUG)
+S#  error You must define ether RELEASE or DEBUG
+S# endif
+S
+S# include <stdint.h>
+S# include <stdbool.h>
+S
+S# define BYTE                   uint8_t               ///< Byte-Datentyp (8 Bits).
+S# define WORD                   uint32_t              ///< Wort-Datentyp (nach ARM-Konvention 32 Bits, d.h. 4 Bytes).
+S# define HWRD                   uint16_t              ///< Halbwort-Datentyp (nach ARM-Konvention 16 Bits, d.h. 2 Bytes).
+S# define DWRD                   uint64_t              ///< Doppelwort-Datentyp (nach ARM-Konvention 8 Bytes).
+S
+S// Nomenklatur <s>INT<nn>:
+S// <s> = U bzw. S für unsigned bzw. signed
+S// <nn> = 08, 12, 32, 64 für 8 bis 64 Bits
+S
+S# define UINT64                 uint64_t              ///< 8 byte unsigned int.
+S# define SINT64                 int64_t               ///< 8 byte signed int.
+S
+S# define UINT32                 uint32_t              ///< 4 byte unsigned int.
+S# define SINT32                 int32_t               ///< 4 byte signed int.
+S
+S# define UINT16                 uint16_t              ///< 2 byte unsigned int.
+S# define SINT16                 int16_t               ///< 2 byte signed int.
+S
+S# define UINT08                 uint8_t               ///< Single byte unsigned int.
+S# define SINT08                 int8_t                ///< Single byte signed int.
+S
+S# include <stddef.h>
+S
+S# if __ARMCC_VERSION >= 6000000
+S#  pragma clang diagnostic ignored "-Wgnu-anonymous-struct"
+S#  pragma clang diagnostic ignored "-Wnested-anon-types"
+S#  pragma clang diagnostic ignored "-Wc++17-compat-mangling"
+S#  pragma clang diagnostic ignored "-Wc++98-compat-pedantic"
+S#  pragma clang diagnostic ignored "-Wc++98-compat"
+S#  pragma clang diagnostic ignored "-Wgcc-compat"
+S
+S#  define IMPORT(X)             asm(".global " #X);
+S
+Sstatic __attribute__((always_inline)) inline void ___barrier(void) { asm volatile("" ::: "memory", "cc"); }
+S
+S#  define SCHEDULE_BARRIER      ___barrier
+S#  define FORCE_STORES          ___barrier
+S#  define MEMORY_CHANGED        ___barrier
+S
+S#  define __weak                __attribute__((weak))
+S#  define __svc(...)
+S#  define __align(x)            __attribute__((aligned(x)))
+S
+S#  define __clrex               __builtin_arm_clrex
+S#  define __dmb                 __builtin_arm_dmb
+S#  define __dsb                 __builtin_arm_dsb
+S#  define __isb                 __builtin_arm_isb
+S#  define __wfi                 __builtin_arm_wfi
+S#  define __wfe                 __builtin_arm_wfe
+S#  define __rbit                __builtin_arm_rbit
+S#  define __rev                 __builtin_bswap32
+S#  define __clz                 __builtin_clz
+S
+S#  define ARM_RSR(NAME)         __builtin_arm_rsr(#NAME)
+S#  define ARM_WSR(NAME, VALUE)  __builtin_arm_wsr(#NAME, VALUE)
+S
+S#  define DEFINE_ARM_RSR(NAME)  inline WORD ARM_RSR_ ## NAME()                 noexcept { return ARM_RSR(NAME); }
+S#  define DEFINE_ARM_WSR(NAME)  inline void ARM_WSR_ ## NAME(WORD const value) noexcept { ARM_WSR(NAME, value); }
+S
+S#  define OFFSET_OF(S, M)       __builtin_offsetof(S, M)
+S
+S#  define BREAKPOINT(v)         asm volatile("bkpt %0" :: "i"(v))
+S
+S#  define WRITEONLY             /// not implemented
+S#  define READONLY              const
+S
+S#  define __AT(ADDR)            __attribute__((section(".ARM.__at_" #ADDR)))
+S#  define LOCATE_AT(ADDR)       __AT(ADDR)
+S
+S#  define FORCE_INLINE          __attribute__((always_inline)) inline
+S
+S#  define FILE                  __FILE__
+S#  define FUNC                  __FUNCTION__
+S#  define LINE                  __LINE__
+S# else
+S#  pragma anon_unions
+S#  define PRAGMA(X)             _Pragma(#X)
+S
+S#  define IMPORT(X)             PRAGMA(import(X))
+S
+S#  define SCHEDULE_BARRIER()    __schedule_barrier() ///< Compiler-spezifische Pseudo-Anweisung, um die compiler-bedingte Umsortierung von Befehlen über diese Grenze hinaus zu unterbinden. 
+S#  define FORCE_STORES()        __force_stores()
+S#  define MEMORY_CHANGED()      __memory_changed()
+S
+S#  define DEFINE_ARM_RSR(NAME)  inline WORD ARM_RSR_ ## NAME()                 noexcept { register WORD NAME __asm(#NAME); return NAME; }
+S#  define DEFINE_ARM_WSR(NAME)  inline void ARM_WSR_ ## NAME(WORD const value) noexcept { register WORD NAME __asm(#NAME); NAME = value; }
+S
+S#  define ARM_RSR(NAME)         ARM_RSR_ ## NAME()
+S#  define ARM_WSR(NAME, VALUE)  ARM_WSR_ ## NAME(VALUE)
+S
+S#  define OFFSET_OF(S, M)       offsetof(S, M)
+S
+S#  define BREAKPOINT(n)         __breakpoint(n)
+S
+S#  define WRITEONLY             __writeonly
+S#  define READONLY              const
+S
+S#  define LOCATE_AT(ADDR)       __attribute__((at(ADDR)))
+S
+S#  define FORCE_INLINE          __forceinline
+S
+S#  define FILE                  __MODULE__            ///< Name der aktuellen Datei.
+S
+S#  define FUNC                  __PRETTY_FUNCTION__   ///< Name der aktuellen Funktion.
+S#  define LINE                  __LINE__              ///< Aktuelle Zeilennummer.
+S# endif
+S
+Snamespace std { using nullptr_t = decltype(nullptr); }
+S
+S# if defined(DEBUG) && ! defined(NO_BREAK)
+S#  define DEBUG_BREAK(n)        BREAKPOINT(n)
+S# else
+S#  define DEBUG_BREAK(n)
+S# endif
+S
+S# define __CONCAT(A, B)         A##B
+S# define CONCAT(A, B)           __CONCAT(A, B)
+S
+Stemplate<typename TYPE, unsigned DIM> constexpr unsigned ArrayDim(TYPE const (&)[DIM]) noexcept { return DIM; }
+Stemplate<typename TYPE, unsigned DIM> constexpr unsigned ArrayMax(TYPE const (&)[DIM]) noexcept { return DIM - 1U; }
+S
+Stemplate<typename TYPE, unsigned H, unsigned W> constexpr unsigned MatrixRows(TYPE const (&)[H][W]) noexcept { return H; }
+Stemplate<typename TYPE, unsigned H, unsigned W> constexpr unsigned MatrixCols(TYPE const (&)[H][W]) noexcept { return W; }
+S
+S/// Achtung: Die obigen Varianten zur Bestimmung von Feld oder Matrixdimensionen funktionieren nicht, wenn das Feld
+S/// nicht-statische Member-Variable in einer Klasse ist, weil der this-Zeiger nicht constexpr ist.
+S
+Sinline void * operator new   (unsigned, void * const p) noexcept { return p; }
+Sinline void   operator delete(void *, void *) noexcept { }
+S
+N#endif
+N
+L 12 ".\Inc\Cortex\Cortex.h" 2
+N
+Nextern "C" WORD _LdrExW(void const volatile * p            );
+Xextern "C" uint32_t _LdrExW(void const volatile * p            );
+Nextern "C" HWRD _LdrExH(void const volatile * p            );
+Xextern "C" uint16_t _LdrExH(void const volatile * p            );
+Nextern "C" BYTE _LdrExB(void const volatile * p            );
+Xextern "C" uint8_t _LdrExB(void const volatile * p            );
+N  
+Nextern "C" WORD _StrExW(void       volatile * p, WORD value);
+Xextern "C" uint32_t _StrExW(void       volatile * p, uint32_t value);
+Nextern "C" WORD _StrExH(void       volatile * p, HWRD value); 
+Xextern "C" uint32_t _StrExH(void       volatile * p, uint16_t value); 
+Nextern "C" WORD _StrExB(void       volatile * p, BYTE value);
+Xextern "C" uint32_t _StrExB(void       volatile * p, uint8_t value);
+N
+N# if   CORTEX_M == 4
+X# if   4 == 4
+N#  define IRAM2_START             0x10000000U // CCM
+N#  define IRAM2_LENGTH            0x00010000U
+N#  define IRAM1_START             0x20000000U
+N#  define IRAM1_LENGTH            0x00020000U
+N#  define IROM1_START             0x08000000U
+N#  define IROM1_LENGTH            0x00100000U
+N# elif CORTEX_M == 7
+S#  define IRAM2_START             0x20000000U // TCM
+S#  define IRAM2_LENGTH            0x00010000U
+S#  define IRAM1_START             (IRAM2_START + IRAM2_LENGTH)
+S#  define IRAM1_LENGTH            0x00040000U
+S#  define IROM1_START             0x08000000U
+S#  define IROM1_LENGTH            0x00100000U
+S# else
+S#  error Missing CORTEX_M definition (must be 4 or 7)
+N# endif
+N
+NDEFINE_ARM_RSR(control)
+Xinline uint32_t ARM_RSR_control() noexcept { register uint32_t control __asm("control"); return control; }
+NDEFINE_ARM_WSR(control)
+Xinline void ARM_WSR_control(uint32_t const value) noexcept { register uint32_t control __asm("control"); control = value; }
+NDEFINE_ARM_RSR(basepri)
+Xinline uint32_t ARM_RSR_basepri() noexcept { register uint32_t basepri __asm("basepri"); return basepri; }
+NDEFINE_ARM_WSR(basepri)
+Xinline void ARM_WSR_basepri(uint32_t const value) noexcept { register uint32_t basepri __asm("basepri"); basepri = value; }
+NDEFINE_ARM_RSR(primask)
+Xinline uint32_t ARM_RSR_primask() noexcept { register uint32_t primask __asm("primask"); return primask; }
+NDEFINE_ARM_WSR(primask)
+Xinline void ARM_WSR_primask(uint32_t const value) noexcept { register uint32_t primask __asm("primask"); primask = value; }
+NDEFINE_ARM_RSR(faultmask)
+Xinline uint32_t ARM_RSR_faultmask() noexcept { register uint32_t faultmask __asm("faultmask"); return faultmask; }
+NDEFINE_ARM_WSR(faultmask)
+Xinline void ARM_WSR_faultmask(uint32_t const value) noexcept { register uint32_t faultmask __asm("faultmask"); faultmask = value; }
+N
+NDEFINE_ARM_RSR(psp)
+Xinline uint32_t ARM_RSR_psp() noexcept { register uint32_t psp __asm("psp"); return psp; }
+NDEFINE_ARM_WSR(psp)
+Xinline void ARM_WSR_psp(uint32_t const value) noexcept { register uint32_t psp __asm("psp"); psp = value; }
+NDEFINE_ARM_RSR(msp)
+Xinline uint32_t ARM_RSR_msp() noexcept { register uint32_t msp __asm("msp"); return msp; }
+NDEFINE_ARM_WSR(msp)
+Xinline void ARM_WSR_msp(uint32_t const value) noexcept { register uint32_t msp __asm("msp"); msp = value; }
+N
+NDEFINE_ARM_RSR(epsr)
+Xinline uint32_t ARM_RSR_epsr() noexcept { register uint32_t epsr __asm("epsr"); return epsr; }
+NDEFINE_ARM_RSR(apsr)
+Xinline uint32_t ARM_RSR_apsr() noexcept { register uint32_t apsr __asm("apsr"); return apsr; }
+NDEFINE_ARM_RSR(ipsr)
+Xinline uint32_t ARM_RSR_ipsr() noexcept { register uint32_t ipsr __asm("ipsr"); return ipsr; }
+N
+N/// Spezifische Funktionen des %Cortex(-M3/M4/M7) bzw. des zugehörigen aktuellen Befehlssatzes (ARMv7-M).
+Nnamespace Cortex 
+N{
+N  template<unsigned SIZE> struct ArmExclusive;
+N
+N  template<> struct ArmExclusive<sizeof(WORD)> final
+X  template<> struct ArmExclusive<sizeof(uint32_t)> final
+N  { 
+N    ArmExclusive() = delete;
+N    ArmExclusive(ArmExclusive const &) = delete;
+N    ArmExclusive(ArmExclusive      &&) = delete;
+N    
+N    static WORD LdrEx(WORD const volatile & data)                   noexcept { return _LdrExW(&data); }
+X    static uint32_t LdrEx(uint32_t const volatile & data)                   noexcept { return _LdrExW(&data); }
+N    static bool StrEx(WORD       volatile & data, WORD const value) noexcept { return _StrExW(&data, value) != 0U; }
+X    static bool StrEx(uint32_t       volatile & data, uint32_t const value) noexcept { return _StrExW(&data, value) != 0U; }
+N
+N    template<typename TYPE>
+N    static TYPE * LdrEx(TYPE * const volatile & p)                  noexcept { return (TYPE *)_LdrExW(&p); }
+N
+N    template<typename TYPE>
+N    static bool   StrEx(TYPE *       volatile & p, TYPE * const q)  noexcept { return _StrExW(&p, (WORD)q) != 0U; }
+X    static bool   StrEx(TYPE *       volatile & p, TYPE * const q)  noexcept { return _StrExW(&p, (uint32_t)q) != 0U; }
+N  };
+N
+N  template<> struct ArmExclusive<sizeof(HWRD)> final
+X  template<> struct ArmExclusive<sizeof(uint16_t)> final
+N  { 
+N    ArmExclusive() = delete;
+N    ArmExclusive(ArmExclusive const &) = delete;
+N    ArmExclusive(ArmExclusive      &&) = delete;
+N    
+N    static HWRD LdrEx(HWRD const volatile & data)                   noexcept { return _LdrExH(&data); }
+X    static uint16_t LdrEx(uint16_t const volatile & data)                   noexcept { return _LdrExH(&data); }
+N    static bool StrEx(HWRD       volatile & data, HWRD const value) noexcept { return _StrExH(&data, value) != 0U; }
+X    static bool StrEx(uint16_t       volatile & data, uint16_t const value) noexcept { return _StrExH(&data, value) != 0U; }
+N  };
+N
+N  template<> struct ArmExclusive<sizeof(BYTE)> final
+X  template<> struct ArmExclusive<sizeof(uint8_t)> final
+N  { 
+N    ArmExclusive() = delete;
+N    ArmExclusive(ArmExclusive const &) = delete;
+N    ArmExclusive(ArmExclusive      &&) = delete;
+N    
+N    static BYTE LdrEx(BYTE const volatile & data)                   noexcept { return _LdrExB(&data); }
+X    static uint8_t LdrEx(uint8_t const volatile & data)                   noexcept { return _LdrExB(&data); }
+N    static bool StrEx(BYTE       volatile & data, BYTE const value) noexcept { return _StrExB(&data, value) != 0U; }
+X    static bool StrEx(uint8_t       volatile & data, uint8_t const value) noexcept { return _StrExB(&data, value) != 0U; }
+N  };
+N
+N  // This are the (core) numbers of the current exception, see Cortex-M3/M4/M7 PSR
+N
+N  constexpr unsigned const isrNum_THREAD_MODE =  0U; ///< ISR-Nummer in PSR für Thread-Modus
+N  constexpr unsigned const isrNum_RESET       =  1U;
+N  constexpr unsigned const isrNum_NMI         =  2U;
+N  constexpr unsigned const isrNum_HRD_FAULT   =  3U; ///< ISR-Nummer in PSR für Hard-Fault
+N  constexpr unsigned const isrNum_MEM_FAULT   =  4U; ///< ISR-Nummer in PSR für Memory-Fault
+N  constexpr unsigned const isrNum_BUS_FAULT   =  5U; ///< ISR-Nummer in PSR für Bus-Fault
+N  constexpr unsigned const isrNum_USG_FAULT   =  6U; ///< ISR-Nummer in PSR für Usage-Fault
+N  constexpr unsigned const isrNum_SVC         = 11U; ///< ISR-Nummer in PSR für SVC
+N  constexpr unsigned const isrNum_DEBMON      = 12U; 
+N  constexpr unsigned const isrNum_PSV         = 14U; ///< ISR-Nummer in PSR für PSV
+N  constexpr unsigned const isrNum_STK         = 15U; ///< ISR-Nummer in PSR für STK (System tick)
+N  constexpr unsigned const isrNum_EXTERN0     = 16U; // ab 16 beginnen die externen ISRs
+N
+N  FORCE_INLINE constexpr unsigned isrNum_EXTERN(unsigned const n) noexcept { return n + isrNum_EXTERN0; }
+X  __forceinline constexpr unsigned isrNum_EXTERN(unsigned const n) noexcept { return n + isrNum_EXTERN0; }
+N
+N  constexpr WORD const excReturnNonFp = 0xFFFFFFFDU; ///< Exception return code (thumb mode, return to thread mode, use PSP after return, non-FP state).
+X  constexpr uint32_t const excReturnNonFp = 0xFFFFFFFDU; 
+N  constexpr WORD const excReturnUseFp = 0xFFFFFFEDU; ///< Exception return code (thumb mode, return to thread mode, use PSP after return, use FP state).
+X  constexpr uint32_t const excReturnUseFp = 0xFFFFFFEDU; 
+N
+N  [[noreturn]] void Reset() noexcept;
+N
+N  [[noreturn]] void Reset_privileged() noexcept;
+N
+N  FORCE_INLINE void DMB() noexcept { SCHEDULE_BARRIER(); __dmb(0xF); SCHEDULE_BARRIER(); }  
+X  __forceinline void DMB() noexcept { __schedule_barrier(); __dmb(0xF); __schedule_barrier(); }  
+N  FORCE_INLINE void DSB() noexcept { SCHEDULE_BARRIER(); __dsb(0xF); SCHEDULE_BARRIER(); }
+X  __forceinline void DSB() noexcept { __schedule_barrier(); __dsb(0xF); __schedule_barrier(); }
+N  FORCE_INLINE void ISB() noexcept { SCHEDULE_BARRIER(); __isb(0xF); SCHEDULE_BARRIER(); }
+X  __forceinline void ISB() noexcept { __schedule_barrier(); __isb(0xF); __schedule_barrier(); }
+N
+N  FORCE_INLINE WORD RBIT(WORD w) noexcept { return __rbit(w); }
+X  __forceinline uint32_t RBIT(uint32_t w) noexcept { return __rbit(w); }
+N  
+N  FORCE_INLINE WORD REV(WORD w) noexcept { return __rev(w); }
+X  __forceinline uint32_t REV(uint32_t w) noexcept { return __rev(w); }
+N  
+N  FORCE_INLINE void WFI() noexcept { __wfi(); }
+X  __forceinline void WFI() noexcept { __wfi(); }
+N  FORCE_INLINE void WFE() noexcept { __wfe(); }
+X  __forceinline void WFE() noexcept { __wfe(); }
+N
+N  /// Anzahl der (linksseitig) führenden 0-Bits (beginnend bei Bit 31) bestimmen.
+N  /// \param value ist der zu analysierende Wert.
+N  /// \return Anzahl der 'linksbündigen' 0-en (0 bis 32)
+N  FORCE_INLINE int CLZ(WORD const value) { return __clz( value); }
+X  __forceinline int CLZ(uint32_t const value) { return __clz( value); }
+N
+N  /// Anzahl der (linksseitig) führenden 1-Bits (beginnend bei Bit 31) bestimmen.
+N  /// \param value ist der zu analysierende Wert.
+N  /// \return Anzahl der 'linksbündigen' 1-en (0 bis 32)
+N  FORCE_INLINE int CLO(WORD const value) { return __clz(~value); }
+X  __forceinline int CLO(uint32_t const value) { return __clz(~value); }
+N
+N  BYTE GetPSVPrio() noexcept;
+X  uint8_t GetPSVPrio() noexcept;
+N  BYTE GetSVCPrio() noexcept;
+X  uint8_t GetSVCPrio() noexcept;
+N  BYTE GetSTKPrio() noexcept;
+X  uint8_t GetSTKPrio() noexcept;
+N  BYTE GetMinPrio() noexcept;
+X  uint8_t GetMinPrio() noexcept;
+N  
+N  constexpr unsigned const CONTROL_usermode = 1U;
+N  constexpr unsigned const CONTROL_altstack = 2U;
+N  constexpr unsigned const CONTROL_fpucntxt = 4U;
+N
+N  /// CONTROL-Register auslesen.
+N  /// \return Wert des CONTROL-Registers
+N  FORCE_INLINE WORD GetCONTROL() noexcept { return ARM_RSR(control); }
+X  __forceinline uint32_t GetCONTROL() noexcept { return ARM_RSR_control(); }
+N
+N  /// CONTROL-Register einstellen.
+N  /// \param[in] value ist der neue Wert des CONTROL-Registers
+N  /// \note Der Prozessor muss sich im privilegierten Modus befinden. Es findet keine Prüfung statt, ob diese Voraussetzung zutrifft.
+N  FORCE_INLINE void SetCONTROL_privileged(WORD const value) noexcept { ARM_WSR(control, value); }
+X  __forceinline void SetCONTROL_privileged(uint32_t const value) noexcept { ARM_WSR_control(value); }
+N
+N  void SetCONTROL(WORD value) noexcept;
+X  void SetCONTROL(uint32_t value) noexcept;
+N
+N  /// BASEPRI-Register auslesen.
+N  /// \return Wert des BASEPRI-Registers
+N  /// \note Der Prozessor muss sich im privilegierten Modus befinden. Es findet keine Prüfung statt, ob diese Voraussetzung zutrifft.
+N  FORCE_INLINE WORD GetBASEPRI_privileged() noexcept { return ARM_RSR(basepri); }
+X  __forceinline uint32_t GetBASEPRI_privileged() noexcept { return ARM_RSR_basepri(); }
+N
+N  /// BASEPRI-Register einstellen.
+N  /// \param[in] basePri ist der neue Wert des BASEPRI-Registers
+N  /// \note Der Prozessor muss sich im privilegierten Modus befinden. Es findet keine Prüfung statt, ob diese Voraussetzung zutrifft.
+N  /// BASEPRI-Register auslesen.
+N  /// \return Wert des BASEPRI-Registers.
+N  WORD GetBASEPRI() noexcept;
+X  uint32_t GetBASEPRI() noexcept;
+N
+N  FORCE_INLINE void SetBASEPRI_privileged(WORD const value) noexcept { ARM_WSR(basepri, value); }
+X  __forceinline void SetBASEPRI_privileged(uint32_t const value) noexcept { ARM_WSR_basepri(value); }
+N
+N  /// BASEPRI-Register einstellen.
+N  /// \param[in] value ist der neue Wert des BASEPRI-Registers
+N  void SetBASEPRI(WORD value) noexcept;
+X  void SetBASEPRI(uint32_t value) noexcept;
+N
+N  /// PRIMASK-Register auslesen im privilegierten Modus.
+N  /// \copydetails Cortex::GetPRIMASK()
+N  /// \return Wert des PRIMASK-Registers.
+N  /// \warning Der Prozessor muss sich im privilegierten Modus befinden, damit diese Funktion ausgeführt werden kann.
+N  /// Befindet sich der Prozessor nicht im privilegierten Modus, wird ein Usage-Fault ausgelöst.
+N  WORD GetPRIMASK_privileged() noexcept;
+X  uint32_t GetPRIMASK_privileged() noexcept;
+N
+N  /// PRIMASK-Register auslesen.
+N  /// Das PRIMASK-Register besteht aus einem Bit. Ist es gesetzt, so werden \b alle IRQs (Exceptions) mit einstellbarer 
+N  /// Priorität gesperrt. Achtung, dies betrifft auch den SVC-IRQ.
+N  /// Wenn dieses Bit gesetzt ist, können folglich auch keine SVC-IRQs mehr bedient werden. Ein SVC-Aufruf ist dann verboten.
+N  /// Es muss deshalb sichergestellt werden, dass immer dann, wenn das PRIMASK-Register gesetzt wird auch gleichzeitig
+N  /// das System in den Exception-Modus versetzt wird, weil sonst keine privilegierten Befehle mehr ausgeführt werden können.
+N  /// Ist das PRIMASK-Register gelöscht, so können auch nicht-privilegierte Befehle indirekt via SVC-Aufruf implementiert werden.
+N  /// Hierzu löst man einen SVC aus, der dann in dem zugehörigen Handler (immer im Exception-Modus) die entsprechenden 
+N  /// Operationen ausführt. 
+N  /// \return Wert des PRIMASK-Registers.
+N  WORD GetPRIMASK() noexcept;
+X  uint32_t GetPRIMASK() noexcept;
+N
+N  /// PRIMASK aktivieren (alle Interrupts bis auf NMI und Hard-fault sperren).
+N  /// \note Der Prozessor muss sich im privilegierten Modus befinden. Es findet keine Prüfung statt, ob diese Voraussetzung zutrifft.
+N  /// \note Der Prozessor wird zusätzlich auch außerhalb einer IRQ in den privilegierten Modus versetzt, damit man ein Möglichkeit hat, die
+N  /// Exception wieder zu erlauben, da man auf das PRIMASK-Register nur im privilegierten Modus zugreifen kann.
+N  /// \warning
+N  /// Ist das PRIMASK-Register gesetzt und befindet sich der Controller gleichzeitig im User-Modus, 
+N  /// so gibt es somit keine generelle Möglichkeit mehr, privilegierte Operationen auszuführen, weil dann auch der
+N  /// SVC-IRQ nicht mehr verwendbar ist. Da das Ändern der PRIMASK-Register eine privilegierte Anweisung darstellt, könnte man
+N  /// dann das PRIMASK-Register nie mehr ändern.
+N  /// \warning Diese Funktion sperrt auch die Ausführung aller Exceptions mit programmierbarer Priorität, also \b auch den SVC
+N  /// und ebenfalls Usage-/Bus- und Memory-Faults!
+N  void SetPRIMASK_privileged() noexcept;
+N
+N  /// PRIMASK löschen.
+N  /// \note Der Prozessor muss sich im privilegierten Modus befinden. Es findet keine Prüfung statt, ob diese Voraussetzung zutrifft.
+N  /// \warning Es gibt keine User-Mode-Variante dieser Funktion. 
+N  void ClrPRIMASK_privileged() noexcept;
+N
+N  /// PRIMASK setzen.
+N  void SetPRIMASK() noexcept;
+N
+N  FORCE_INLINE WORD GetIPSR() noexcept { return ARM_RSR(ipsr); }
+X  __forceinline uint32_t GetIPSR() noexcept { return ARM_RSR_ipsr(); }
+N  FORCE_INLINE WORD GetAPSR() noexcept { return ARM_RSR(apsr); }
+X  __forceinline uint32_t GetAPSR() noexcept { return ARM_RSR_apsr(); }
+N  FORCE_INLINE WORD GetEPSR() noexcept { return ARM_RSR(epsr); }
+X  __forceinline uint32_t GetEPSR() noexcept { return ARM_RSR_epsr(); }
+N
+N  /// FAULTMASK auslesen.
+N  /// \return Wert des FAULTMASK-Registers
+N  /// \note Der Prozessor muss sich im privilegierten Modus befinden. Es findet keine Prüfung statt, ob diese Voraussetzung zutrifft.
+N  FORCE_INLINE WORD GetFLTMASK_privileged() noexcept { return ARM_RSR(faultmask); }
+X  __forceinline uint32_t GetFLTMASK_privileged() noexcept { return ARM_RSR_faultmask(); }
+N
+N  /// FAULTMASK einstellen.
+N  /// \param[in] value ist der neue Wert des FAULTMASK-Registers
+N  /// \note Der Prozessor muss sich im privilegierten Modus befinden. Es findet keine Prüfung statt, ob diese Voraussetzung zutrifft.
+N  FORCE_INLINE void SetFLTMASK_privileged(WORD const value) { ARM_WSR(faultmask, value); }
+X  __forceinline void SetFLTMASK_privileged(uint32_t const value) { ARM_WSR_faultmask(value); }
+N
+N  void FpuEnable() noexcept;
+N
+N  void FpuDisable() noexcept;
+N
+N  /// Load-linked-Befehl.
+N  /// Diese Funktion lädt ein Datum (1, 2 oder 4 Bytes breit) und markiert die Ownership des Datums. 
+N  /// \param data ist eine Referenz auf das zu lesende Datum
+N  /// \return Es wird der gelesene Wert zurückgegeben
+N  /// \tparam TYPE ist der Typ des zu lesenden Datums
+N  /// \warning Ein weiterer Aufruf dieser Funktion mit einem anderen Argument, löscht die Ownership des vorangegangenen 
+N  /// Aufrufs; ein verschachtelter Aufruf ist nicht erlaubt.
+N  /// \sa Cortex::SaveConditional()
+N  template<typename TYPE>
+N  FORCE_INLINE TYPE LoadLinked(TYPE const volatile & data) noexcept { DMB(); return ArmExclusive<sizeof(TYPE)>::LdrEx(data); }
+X  __forceinline TYPE LoadLinked(TYPE const volatile & data) noexcept { DMB(); return ArmExclusive<sizeof(TYPE)>::LdrEx(data); }
+N  
+N  /// Store-conditional-Befehl.  
+N  /// Diese Funktion überschreibt ein Datum (1, 2 oder 4 Bytes breit) dessen Ownership zuvor belegt wurde.
+N  /// Die Speicherung scheitert, wenn die Ownership nicht belegt ist. 
+N  /// \param data ist eine Referenz auf das zu Datum, das überschrieben werden soll.
+N  /// \param value ist der Wert, mit dem das Datum überschrieben wird.
+N  /// \return \c false bei Erfolg; \c true, wenn der Vorgang wiederholt werden muss. 
+N  /// \tparam TYPE ist der Typ des zu speichernden Datums
+N  /// \sa Cortex::LoadLinked()
+N  template<typename TYPE>
+N  FORCE_INLINE bool SaveConditional(TYPE volatile & data, TYPE const value) noexcept
+X  __forceinline bool SaveConditional(TYPE volatile & data, TYPE const value) noexcept
+N  {
+N    if ( ArmExclusive<sizeof(TYPE)>::StrEx(data, value) )
+N      return true;
+N
+N    DSB();
+N      
+N    return false;
+N  }
+N  
+N  /// Ownership entfernen.
+N  /// \sa Cortex::SaveConditional()
+N  /// \sa Cortex::LoadLinked()
+N  FORCE_INLINE void ClearOwnership() noexcept { __clrex(); ISB(); }
+X  __forceinline void ClearOwnership() noexcept { __clrex(); ISB(); }
+N
+N  /// Nummer der aktuellen Exception zurückgeben.
+N  /// Die Nummer der aktuellen Exception (bzw. der aktiven Interrupt-Service-Routine) wird vom Cortex-M3 im (I)PSR zur Verfügung
+N  /// gestellt. Diese Nummer ist 0-relativ (0 = thread mode, d.h. keine Exception). Werte größer als 15 geben externe
+N  /// Exceptions an.
+N  /// \return Nummer der aktiven Exception.
+N  FORCE_INLINE WORD GetCurrentIsrNum() noexcept { return GetIPSR(); }
+X  __forceinline uint32_t GetCurrentIsrNum() noexcept { return GetIPSR(); }
+N
+N  /// Abfrage, ob sich der Prozessor im Thread-Modus befindet.
+N  /// \return \c true, wenn sich der Prozessor im Thread-Mode befindet und somit zurzeit keine IRQ bedient wird.
+N  /// \note Die Bestimmung, ob sich der Prozessor im Thread-Modus befindet, erfolgt anhand der aktuellen ISR-Nummer.
+N  FORCE_INLINE bool IsThreadMode() noexcept { return GetCurrentIsrNum() == isrNum_THREAD_MODE; }
+X  __forceinline bool IsThreadMode() noexcept { return GetCurrentIsrNum() == isrNum_THREAD_MODE; }
+N
+N  /// Abfrage, ob sich der Prozessor im aktuellen Kontext privilegierte Befehle ausführen kann.
+N  /// \return \c true, wenn privilegierte Befehle ausführbar sind.
+N  /// \note Exception mode ist immer privilegiert, unabhängig von CONTROL[0]!
+N  FORCE_INLINE bool IsPrivileged() noexcept { return (GetCONTROL() & CONTROL_usermode) == 0U || ! IsThreadMode(); }
+X  __forceinline bool IsPrivileged() noexcept { return (GetCONTROL() & CONTROL_usermode) == 0U || ! IsThreadMode(); }
+N  
+N  bool IsInterruptable(BYTE prio) noexcept;
+X  bool IsInterruptable(uint8_t prio) noexcept;
+N
+N  inline bool IsInterruptableByPSV() noexcept { return IsInterruptable(GetPSVPrio()); }
+N  inline bool IsInterruptableBySVC() noexcept { return IsInterruptable(GetSVCPrio()); }
+N  inline bool IsInterruptableBySTK() noexcept { return IsInterruptable(GetSTKPrio()); }
+N
+N  /// Anzahl der System-Ticks zurückgeben.
+N  /// Da der Cortex-Core einen System-Timer beinhaltet (Modul STK), kann man diesen dazu verwenden, um eine Systemzeit 
+N  /// zu implementieren.
+N  /// \return Anzahl der System-Ticks (Zyklusdauer normalerweise 1 ms) seit Systemstart.
+N  WORD GetTicks() noexcept;
+X  uint32_t GetTicks() noexcept;
+N
+N  /// Anzahl der System-Ticks als 64-Bit-Zahl zurückgeben, um Probleme bei tagelanger Betriebsdauer zu vermeiden.
+N  /// \return Anzahl der System-Ticks (Zyklusdauer normalerweise 1 ms) seit Systemstart.
+N  UINT64 GetWideTicks() noexcept;
+X  uint64_t GetWideTicks() noexcept;
+N
+N  /// Systemzeit (Anzal der System-Ticks) mit erhöhter Auflösung bzw. Genauigkeit zurückgeben.
+N  UINT64 GetFineTime(UINT32 const scf) noexcept;
+X  uint64_t GetFineTime(uint32_t const scf) noexcept;
+N
+N  /// Alternativen Stack einrichten.
+N  /// \param[in] stack ist die \b Endadresse des Stack-Speicherbereiches. \b Achtung: Must be 8-byte-aligned!
+N  /// \param[in] num gibt die Anzahl der Wörter des Stacks an.
+N  /// \warning Der Prozessor muss sich im privilegierten Modus befinden. Es findet keine Prüfung statt, ob diese Voraussetzung zutrifft.
+N  /// Wird die Voraussetzung verletzt, wird ein Usage-Fault ausgelöst.
+N  void SwitchStack(WORD * stack, unsigned num) noexcept;
+X  void SwitchStack(uint32_t * stack, unsigned num) noexcept;
+N
+N  template<unsigned DIM>
+N  FORCE_INLINE void SwitchStack(WORD (& stack)[DIM]) noexcept { return SwitchStack(stack, DIM); } 
+X  __forceinline void SwitchStack(uint32_t (& stack)[DIM]) noexcept { return SwitchStack(stack, DIM); } 
+N
+N  bool AltStackIsOk() noexcept;
+N}
+N
+N#endif
+L 95 ".\Inc\Debug\Debug.h" 2
+N
+N#  define ITM_PUTS              ItmPutS
+N#  define ITM_PRINT(...)        ItmPrint(__VA_ARGS__)
+N#  define LOG_PRINT(...)        ItmPrint(Formatter::Digits(8), Cortex::GetTicks(), ' ', Formatter::Length(25), FILE, "(", Formatter::Digits(4), LINE, ") ", __FUNCTION__, ": ", __VA_ARGS__)
+N# else
+S#  define ITM_PUTS(T)
+S#  define ITM_PRINT(...)
+S#  define LOG_PRINT(...)
+N# endif
+N
+N/// Hilfsklasse, um zu Prüfen, ob ein Index gültig ist.
+N/// \tparam TYPE ist der Index-Datentyp.
+N/// \tparam SIGNED ist true, wenn der Index auch negative Werte annehmen kann.
+Ntemplate<typename TYPE, bool SIGNED>
+Nclass IndexHelper;
+N
+Ntemplate<typename TYPE> class IndexHelper<TYPE, true>
+N{
+N  public:
+N  
+N  IndexHelper() = delete;
+N  
+N  static constexpr TYPE const zero = 0;
+N  
+N  /// Prüfe, ob Index gültig ist.
+N  /// \param indx ist der zu prüfende Index.
+N  /// \param max ist die Indexobergrenze.
+N  static constexpr bool Verify(TYPE const indx, TYPE const max) noexcept { return indx > max || indx < zero; }
+N};
+N
+Ntemplate<typename TYPE> class IndexHelper<TYPE, false>
+N{
+N  public:
+N  
+N  IndexHelper() = delete;
+N  
+N  /// Prüfe, ob Index gültig ist.
+N  /// \param indx ist der zu prüfende Index.
+N  /// \param max ist die Indexobergrenze.
+N  static constexpr bool Verify(TYPE const indx, TYPE const max) noexcept { return indx > max; }
+N};
+N
+N# include <Meta.h>
+L 1 ".\Inc\Utilities\Meta.h" 1
+N//
+N// Meta.h
+N//
+N
+N/// \file Meta.h
+N/// Meta-Programmierung (inspiriert und zum Teil auch Idee geklaut von www.boost.org).
+N
+N#ifndef guard_META_H
+N# define guard_META_H
+N
+N// Some plain type traits etc. re-inventions.
+N
+N/// Typengenerator um das Typenattribut \c const von einem Typ zu entfernen.
+N/// \tparam TYPE ist der Input-Typ.
+Ntemplate<typename TYPE>
+Nstruct RemConst
+N{
+N  typedef TYPE Type;
+N};
+N
+Ntemplate<typename TYPE> struct RemConst<TYPE const> { typedef TYPE Type; };
+N
+N/// Typengenerator um das Typenattribut \c const zu einem Typ hinzuzufügen.
+N/// \tparam TYPE ist der Input-Typ.
+Ntemplate<typename TYPE>
+Nstruct AddConst
+N{
+N  typedef typename RemConst<TYPE>::Type const Type;
+N};
+N
+N/// Typengenerator um das Typenattribut \c volatile von einem Typ zu entfernen.
+N/// \tparam TYPE ist der Input-Typ.
+Ntemplate<typename TYPE>
+Nstruct RemVolatile
+N{
+N  typedef TYPE Type;
+N};
+N
+Ntemplate<typename TYPE> struct RemVolatile<TYPE const> { typedef TYPE Type; };
+N
+Ntemplate<typename TYPE>
+Nstruct RemAttr
+N{
+N  typedef typename RemVolatile<typename RemConst<TYPE>::Type>::Type Type;
+N};
+N
+N/// Typengenerator um aus einem Referenz-Typ einen Werte-Typ zu machen (entfernt \c &, 
+N/// d.h. macht aus der Referenz auf ein Datum (l-value or r-value reference) einen Wert.
+N/// \tparam TYPE ist der Input-Typ.
+Ntemplate<typename TYPE>
+Nstruct RemRef
+N{
+N  typedef TYPE Type;
+N};
+N
+Ntemplate<typename TYPE> struct RemRef<TYPE  &> { typedef TYPE Type; };
+Ntemplate<typename TYPE> struct RemRef<TYPE &&> { typedef TYPE Type; };
+N
+N/// Typengenerator um das Typenattribut \c const von einem Typ zu entfernen und daraus einen Werte-Typ zu machen.
+N/// \tparam TYPE ist der Input-Typ.
+N/// \sa RemConst
+N/// \sa RemRef
+Ntemplate<typename TYPE>
+Nstruct RemAll
+N{
+N  typedef typename RemRef<typename RemAttr<TYPE>::Type>::Type Type;
+N};
+N
+N/// Typengenerator um in Abhängigkeit eines (zur Compile-Zeit konstanten) logischen Ausdrucks zwischen zwei Typen auszuwählen.
+Ntemplate<bool COND, class THEN, class ELSE> 
+Nstruct IfThenElse
+N{
+N  typedef THEN Type;
+N};
+N
+Ntemplate<class THEN, class ELSE> struct IfThenElse<false, THEN, ELSE> { typedef ELSE Type; };
+N
+Nstruct IsTrue  { static constexpr bool const flag = true;  };
+Nstruct IsFalse { static constexpr bool const flag = false; };
+N
+N# include <Compiler.h>
+L 1 ".\Inc\Compiler.h" 1
+N//
+N// Compiler.h
+N//
+N
+N/// \file Compiler.h
+N/// Compiler-spezifische Definitions, Macros und Funktionen.
+N/// Um die Quellen auch zu Testzwecken auch mit anderen Compilern (z.B. MSC) übersetzen zu können, müssten in dieser Datei
+N/// mittels bedingter Kompilierung verschiedene Makros für die unterschiedlichen Compiler definiert werden.
+N
+N#if ! defined(guard_COMPILER_H) && defined(__arm__)
+X#if ! 1L && 1L
+S# define guard_COMPILER_H
+S
+S# if ! defined(__cplusplus)
+S#  error C++ only!
+S# endif
+S
+S# if   defined(_DEBUG)  && ! defined(DEBUG)
+S#  define DEBUG
+S# endif
+S
+S# if   defined(RELEASE) &&   defined(DEBUG)
+S#  error You cannot define RELEASE and DEBUG at the same time
+S# endif
+S# if ! defined(RELEASE) && ! defined(DEBUG)
+S#  error You must define ether RELEASE or DEBUG
+S# endif
+S
+S# include <stdint.h>
+S# include <stdbool.h>
+S
+S# define BYTE                   uint8_t               ///< Byte-Datentyp (8 Bits).
+S# define WORD                   uint32_t              ///< Wort-Datentyp (nach ARM-Konvention 32 Bits, d.h. 4 Bytes).
+S# define HWRD                   uint16_t              ///< Halbwort-Datentyp (nach ARM-Konvention 16 Bits, d.h. 2 Bytes).
+S# define DWRD                   uint64_t              ///< Doppelwort-Datentyp (nach ARM-Konvention 8 Bytes).
+S
+S// Nomenklatur <s>INT<nn>:
+S// <s> = U bzw. S für unsigned bzw. signed
+S// <nn> = 08, 12, 32, 64 für 8 bis 64 Bits
+S
+S# define UINT64                 uint64_t              ///< 8 byte unsigned int.
+S# define SINT64                 int64_t               ///< 8 byte signed int.
+S
+S# define UINT32                 uint32_t              ///< 4 byte unsigned int.
+S# define SINT32                 int32_t               ///< 4 byte signed int.
+S
+S# define UINT16                 uint16_t              ///< 2 byte unsigned int.
+S# define SINT16                 int16_t               ///< 2 byte signed int.
+S
+S# define UINT08                 uint8_t               ///< Single byte unsigned int.
+S# define SINT08                 int8_t                ///< Single byte signed int.
+S
+S# include <stddef.h>
+S
+S# if __ARMCC_VERSION >= 6000000
+S#  pragma clang diagnostic ignored "-Wgnu-anonymous-struct"
+S#  pragma clang diagnostic ignored "-Wnested-anon-types"
+S#  pragma clang diagnostic ignored "-Wc++17-compat-mangling"
+S#  pragma clang diagnostic ignored "-Wc++98-compat-pedantic"
+S#  pragma clang diagnostic ignored "-Wc++98-compat"
+S#  pragma clang diagnostic ignored "-Wgcc-compat"
+S
+S#  define IMPORT(X)             asm(".global " #X);
+S
+Sstatic __attribute__((always_inline)) inline void ___barrier(void) { asm volatile("" ::: "memory", "cc"); }
+S
+S#  define SCHEDULE_BARRIER      ___barrier
+S#  define FORCE_STORES          ___barrier
+S#  define MEMORY_CHANGED        ___barrier
+S
+S#  define __weak                __attribute__((weak))
+S#  define __svc(...)
+S#  define __align(x)            __attribute__((aligned(x)))
+S
+S#  define __clrex               __builtin_arm_clrex
+S#  define __dmb                 __builtin_arm_dmb
+S#  define __dsb                 __builtin_arm_dsb
+S#  define __isb                 __builtin_arm_isb
+S#  define __wfi                 __builtin_arm_wfi
+S#  define __wfe                 __builtin_arm_wfe
+S#  define __rbit                __builtin_arm_rbit
+S#  define __rev                 __builtin_bswap32
+S#  define __clz                 __builtin_clz
+S
+S#  define ARM_RSR(NAME)         __builtin_arm_rsr(#NAME)
+S#  define ARM_WSR(NAME, VALUE)  __builtin_arm_wsr(#NAME, VALUE)
+S
+S#  define DEFINE_ARM_RSR(NAME)  inline WORD ARM_RSR_ ## NAME()                 noexcept { return ARM_RSR(NAME); }
+S#  define DEFINE_ARM_WSR(NAME)  inline void ARM_WSR_ ## NAME(WORD const value) noexcept { ARM_WSR(NAME, value); }
+S
+S#  define OFFSET_OF(S, M)       __builtin_offsetof(S, M)
+S
+S#  define BREAKPOINT(v)         asm volatile("bkpt %0" :: "i"(v))
+S
+S#  define WRITEONLY             /// not implemented
+S#  define READONLY              const
+S
+S#  define __AT(ADDR)            __attribute__((section(".ARM.__at_" #ADDR)))
+S#  define LOCATE_AT(ADDR)       __AT(ADDR)
+S
+S#  define FORCE_INLINE          __attribute__((always_inline)) inline
+S
+S#  define FILE                  __FILE__
+S#  define FUNC                  __FUNCTION__
+S#  define LINE                  __LINE__
+S# else
+S#  pragma anon_unions
+S#  define PRAGMA(X)             _Pragma(#X)
+S
+S#  define IMPORT(X)             PRAGMA(import(X))
+S
+S#  define SCHEDULE_BARRIER()    __schedule_barrier() ///< Compiler-spezifische Pseudo-Anweisung, um die compiler-bedingte Umsortierung von Befehlen über diese Grenze hinaus zu unterbinden. 
+S#  define FORCE_STORES()        __force_stores()
+S#  define MEMORY_CHANGED()      __memory_changed()
+S
+S#  define DEFINE_ARM_RSR(NAME)  inline WORD ARM_RSR_ ## NAME()                 noexcept { register WORD NAME __asm(#NAME); return NAME; }
+S#  define DEFINE_ARM_WSR(NAME)  inline void ARM_WSR_ ## NAME(WORD const value) noexcept { register WORD NAME __asm(#NAME); NAME = value; }
+S
+S#  define ARM_RSR(NAME)         ARM_RSR_ ## NAME()
+S#  define ARM_WSR(NAME, VALUE)  ARM_WSR_ ## NAME(VALUE)
+S
+S#  define OFFSET_OF(S, M)       offsetof(S, M)
+S
+S#  define BREAKPOINT(n)         __breakpoint(n)
+S
+S#  define WRITEONLY             __writeonly
+S#  define READONLY              const
+S
+S#  define LOCATE_AT(ADDR)       __attribute__((at(ADDR)))
+S
+S#  define FORCE_INLINE          __forceinline
+S
+S#  define FILE                  __MODULE__            ///< Name der aktuellen Datei.
+S
+S#  define FUNC                  __PRETTY_FUNCTION__   ///< Name der aktuellen Funktion.
+S#  define LINE                  __LINE__              ///< Aktuelle Zeilennummer.
+S# endif
+S
+Snamespace std { using nullptr_t = decltype(nullptr); }
+S
+S# if defined(DEBUG) && ! defined(NO_BREAK)
+S#  define DEBUG_BREAK(n)        BREAKPOINT(n)
+S# else
+S#  define DEBUG_BREAK(n)
+S# endif
+S
+S# define __CONCAT(A, B)         A##B
+S# define CONCAT(A, B)           __CONCAT(A, B)
+S
+Stemplate<typename TYPE, unsigned DIM> constexpr unsigned ArrayDim(TYPE const (&)[DIM]) noexcept { return DIM; }
+Stemplate<typename TYPE, unsigned DIM> constexpr unsigned ArrayMax(TYPE const (&)[DIM]) noexcept { return DIM - 1U; }
+S
+Stemplate<typename TYPE, unsigned H, unsigned W> constexpr unsigned MatrixRows(TYPE const (&)[H][W]) noexcept { return H; }
+Stemplate<typename TYPE, unsigned H, unsigned W> constexpr unsigned MatrixCols(TYPE const (&)[H][W]) noexcept { return W; }
+S
+S/// Achtung: Die obigen Varianten zur Bestimmung von Feld oder Matrixdimensionen funktionieren nicht, wenn das Feld
+S/// nicht-statische Member-Variable in einer Klasse ist, weil der this-Zeiger nicht constexpr ist.
+S
+Sinline void * operator new   (unsigned, void * const p) noexcept { return p; }
+Sinline void   operator delete(void *, void *) noexcept { }
+S
+N#endif
+N
+L 82 ".\Inc\Utilities\Meta.h" 2
+N
+N/// Metaprogrammierung: Feststellung, on ein Datentyp ein integraler Datentyp ist.
+N/// Diese Klasse implementiert nur einen statischen, konstanten Wert \c theFlag. Dieser Wert ist eine sog. constant expresssion
+N/// und wird zur Compile-Zeit evaluiert. Dieses Flag (\c true für einen integrale Datentyp, \c false für einen nicht-integralen
+N/// Datentyp) kann somit wiederum als Template-Argument verwendet werden.
+Ntemplate<typename TYPE> struct IsIntegral : public IfThenElse<sizeof(TYPE) <= sizeof(WORD), IsTrue, IsFalse>::Type { };
+Xtemplate<typename TYPE> struct IsIntegral : public IfThenElse<sizeof(TYPE) <= sizeof(uint32_t), IsTrue, IsFalse>::Type { };
+N
+N/// Metaprogrammierung: Feststellung, on ein Datentyp ein Zeiger ist.
+N/// Diese Klasse implementiert nur einen statischen, konstanten Wert \c theFlag. Dieser Wert ist eine sog. constant expresssion
+N/// und wird zur Compile-Zeit evaluiert. Dieses Flag (\c true für einen Zeiger-Typ, \c false sonst) 
+N/// kann somit wiederum als Template-Argument verwendet werden.
+Ntemplate<typename TYPE> struct IsPointer : public IsFalse { };
+N
+Ntemplate<typename TYPE> struct IsPointer<TYPE                *>  : public IsTrue  { };
+Ntemplate<typename TYPE> struct IsPointer<TYPE          const *>  : public IsTrue  { };
+Ntemplate<typename TYPE> struct IsPointer<TYPE volatile       *>  : public IsTrue  { };
+Ntemplate<typename TYPE> struct IsPointer<TYPE volatile const *>  : public IsTrue  { };
+N
+Ntemplate<typename TYPE> struct IsUINTxx : public IsFalse { };
+N
+Ntemplate<>              struct IsUINTxx<UINT08> : public IsTrue  { };
+Xtemplate<>              struct IsUINTxx<uint8_t> : public IsTrue  { };
+Ntemplate<>              struct IsUINTxx<UINT16> : public IsTrue  { };
+Xtemplate<>              struct IsUINTxx<uint16_t> : public IsTrue  { };
+Ntemplate<>              struct IsUINTxx<UINT32> : public IsTrue  { };
+Xtemplate<>              struct IsUINTxx<uint32_t> : public IsTrue  { };
+Ntemplate<>              struct IsUINTxx<UINT64> : public IsTrue  { };
+Xtemplate<>              struct IsUINTxx<uint64_t> : public IsTrue  { };
+N
+Ntemplate<typename TYPE> struct IsSINTxx : public IsFalse { };
+N
+Ntemplate<>              struct IsSINTxx<SINT08> : public IsTrue  { };
+Xtemplate<>              struct IsSINTxx<int8_t> : public IsTrue  { };
+Ntemplate<>              struct IsSINTxx<SINT16> : public IsTrue  { };
+Xtemplate<>              struct IsSINTxx<int16_t> : public IsTrue  { };
+Ntemplate<>              struct IsSINTxx<SINT32> : public IsTrue  { };
+Xtemplate<>              struct IsSINTxx<int32_t> : public IsTrue  { };
+Ntemplate<>              struct IsSINTxx<SINT64> : public IsTrue  { };
+Xtemplate<>              struct IsSINTxx<int64_t> : public IsTrue  { };
+N
+Ntemplate<typename TYPE> struct __ArgType_Val { typedef typename RemAll<TYPE>::Type         Type; };
+Ntemplate<typename TYPE> struct __ArgType_Ref { typedef typename RemAll<TYPE>::Type const & Type; };
+N
+N/// Typengenerator für Übergabeparameter.
+N/// Übergabeparameter werden immer als (konstante) Referenz übergeben, wenn es sich um Strukturen oder sonstige größere Objekte handelt.
+N/// Integer und %Pointer können effektiv als Wert übergeben werden. Diese Klasse bietet die Möglichkeit der Meta-Programmierung.
+Ntemplate<typename TYPE> struct __ArgType : public IfThenElse<IsIntegral<TYPE>::flag, typename __ArgType_Val<TYPE>::Type, typename __ArgType_Ref<TYPE>::Type> { };
+N
+Ntemplate<typename TYPE>
+Nusing ArgType = typename __ArgType<TYPE>::Type;
+N
+N/// Klasse um festzustellen, ob eine Klasse eine Basisklasse zu einer gegebenen Klasse ist (und das ist alles nur geklaut!).
+Ntemplate <typename BASE, typename DRVD>
+Nstruct IsBaseOf
+N{
+N  typedef char (& yes)[1];
+N  typedef char (&  no)[2];
+N
+N  struct Host
+N  {
+N    operator BASE * () const;
+N    operator DRVD * ();
+N  };
+N
+N  template <typename T> 
+N  static yes Check(DRVD *, T);
+N
+N  static no  Check(BASE *, int);
+N
+N  static constexpr bool const flag = sizeof(Check(Host(), int())) == sizeof(yes);
+N};
+N
+N/// Klasse zur Metadaten-Definition für Bereichsgrenzen von POD-Typen.
+Ntemplate<typename TYPE> struct Limits;
+N
+N# include <limits.h>
+L 1 "C:\Keil_v5\ARM\ARMCC\Bin\..\include\limits.h" 1
+N/* limits.h: ANSI 'C' (X3J11 Oct 88) library header, section 2.2.4.2 */
+N/* Copyright (C) Codemist Ltd., 1988                            */
+N/* Copyright 1991-1997 ARM Limited. All rights reserved         */
+N
+N/*
+N * RCS $Revision$
+N * Checkin $Date$
+N * Revising $Author: drodgman $
+N */
+N
+N#ifndef __limits_h
+N#define __limits_h
+N#define __ARMCLIB_VERSION 5060037
+N
+N#define CHAR_BIT 8
+N    /* max number of bits for smallest object that is not a bit-field (byte) */
+N#define SCHAR_MIN (-128)
+N    /* mimimum value for an object of type signed char */
+N#define SCHAR_MAX 127
+N    /* maximum value for an object of type signed char */
+N#define UCHAR_MAX 255
+N    /* maximum value for an object of type unsigned char */
+N#ifdef __FEATURE_SIGNED_CHAR
+S  #define CHAR_MIN (-128)
+S      /* minimum value for an object of type char */
+S  #define CHAR_MAX 127
+S      /* maximum value for an object of type char */
+N#else
+N  #define CHAR_MIN 0
+N      /* minimum value for an object of type char */
+N  #define CHAR_MAX 255
+N      /* maximum value for an object of type char */
+N#endif
+N
+N#if _AEABI_PORTABILITY_LEVEL != 0 && !defined _AEABI_PORTABLE
+X#if _AEABI_PORTABILITY_LEVEL != 0 && !0L
+S  #define _AEABI_PORTABLE
+N#endif
+N
+N#if _AEABI_PORTABILITY_LEVEL != 0 || (!defined _AEABI_PORTABILITY_LEVEL && __DEFAULT_AEABI_PORTABILITY_LEVEL != 0)
+X#if _AEABI_PORTABILITY_LEVEL != 0 || (!0L && __DEFAULT_AEABI_PORTABILITY_LEVEL != 0)
+Sextern const int __aeabi_MB_LEN_MAX;
+S#define MB_LEN_MAX (__aeabi_MB_LEN_MAX)
+N#else
+N#define MB_LEN_MAX 6
+N#endif
+N    /* maximum number of bytes in a multibyte character, */
+N    /* for any supported locale */
+N
+N#define SHRT_MIN  (-0x8000)
+N    /* minimum value for an object of type short int */
+N#define SHRT_MAX  0x7fff
+N    /* maximum value for an object of type short int */
+N#define USHRT_MAX 65535
+N    /* maximum value for an object of type unsigned short int */
+N#define INT_MIN   (~0x7fffffff)  /* -2147483648 and 0x80000000 are unsigned */
+N    /* minimum value for an object of type int */
+N#define INT_MAX   0x7fffffff
+N    /* maximum value for an object of type int */
+N#define UINT_MAX  0xffffffffU
+N    /* maximum value for an object of type unsigned int */
+N#if __sizeof_long == 8
+X#if 4 == 8
+S  #define LONG_MIN  (~0x7fffffffffffffffL)
+N#else
+N  #define LONG_MIN  (~0x7fffffffL)
+N#endif
+N    /* minimum value for an object of type long int */
+N#if __sizeof_long == 8
+X#if 4 == 8
+S  #define LONG_MAX  0x7fffffffffffffffL
+N#else
+N  #define LONG_MAX  0x7fffffffL
+N#endif
+N    /* maximum value for an object of type long int */
+N#if __sizeof_long == 8
+X#if 4 == 8
+S  #define ULONG_MAX 0xffffffffffffffffUL
+N#else
+N  #define ULONG_MAX 0xffffffffUL
+N#endif
+N    /* maximum value for an object of type unsigned long int */
+N#if !defined(__STRICT_ANSI__) || (defined(__STDC_VERSION__) && 199901L <= __STDC_VERSION__) || (defined(__cplusplus) && 201103L <= __cplusplus)
+X#if !0L || (0L && 199901L <= __STDC_VERSION__) || (1L && 201103L <= 201103L)
+N  #define LLONG_MIN  (~0x7fffffffffffffffLL)
+N      /* minimum value for an object of type long long int */
+N  #define LLONG_MAX    0x7fffffffffffffffLL
+N      /* maximum value for an object of type long long int */
+N  #define ULLONG_MAX   0xffffffffffffffffULL
+N      /* maximum value for an object of type unsigned long int */
+N#endif
+N
+N#endif
+N
+N/* end of limits.h */
+N
+L 150 ".\Inc\Utilities\Meta.h" 2
+N
+Ntemplate<> struct Limits<UINT64>
+Xtemplate<> struct Limits<uint64_t>
+N{
+N  static UINT64 const min = 0ULL;
+X  static uint64_t const min = 0ULL;
+N  static UINT64 const max = ~0ULL;
+X  static uint64_t const max = ~0ULL;
+N};
+N
+Ntemplate<> struct Limits<SINT64>
+Xtemplate<> struct Limits<int64_t>
+N{
+N  static SINT64 const max = 0x7FFFFFFFFFFFFFFFLL;
+X  static int64_t const max = 0x7FFFFFFFFFFFFFFFLL;
+N  static SINT64 const min = ~max;
+X  static int64_t const min = ~max;
+N};
+N
+Ntemplate<> struct Limits<UINT32>
+Xtemplate<> struct Limits<uint32_t>
+N{
+N  static UINT32 const min = 0;
+X  static uint32_t const min = 0;
+N  static UINT32 const max = UINT_MAX;
+X  static uint32_t const max = 0xffffffffU;
+N};
+N
+Ntemplate<> struct Limits<SINT32>
+Xtemplate<> struct Limits<int32_t>
+N{
+N  static SINT32 const min = INT_MIN;
+X  static int32_t const min = (~0x7fffffff);
+N  static SINT32 const max = INT_MAX;
+X  static int32_t const max = 0x7fffffff;
+N};
+N
+Ntemplate<> struct Limits<UINT16>
+Xtemplate<> struct Limits<uint16_t>
+N{
+N  static UINT16 const min = 0;
+X  static uint16_t const min = 0;
+N  static UINT16 const max = USHRT_MAX;
+X  static uint16_t const max = 65535;
+N};
+N 
+Ntemplate<> struct Limits<SINT16>
+Xtemplate<> struct Limits<int16_t>
+N{
+N  static SINT16 const min = SHRT_MIN;
+X  static int16_t const min = (-0x8000);
+N  static SINT16 const max = SHRT_MAX;
+X  static int16_t const max = 0x7fff;
+N};
+N 
+Ntemplate<> struct Limits<UINT08>
+Xtemplate<> struct Limits<uint8_t>
+N{
+N  static UINT08 const min = 0;
+X  static uint8_t const min = 0;
+N  static UINT08 const max = CHAR_MAX;
+X  static uint8_t const max = 255;
+N};
+N 
+Ntemplate<> struct Limits<SINT08>
+Xtemplate<> struct Limits<int8_t>
+N{
+N  static SINT08 const min = SCHAR_MIN;
+X  static int8_t const min = (-128);
+N  static SINT08 const max = SCHAR_MAX;
+X  static int8_t const max = 127;
+N};
+N
+N# define UPPER_LIMIT(X)         Limits<decltype(X)>::max;
+N# define LOWER_LIMIT(X)         Limits<decltype(X)>::min;
+N
+N/// Ersatz für die fehlende Implementierung von std::forward<>().
+Ntemplate<typename TYPE> 
+NTYPE && StdForward(typename RemRef<TYPE>::Type & anything)
+N{
+N  return static_cast<TYPE &&>(anything);
+N} 
+N
+N/// Ersatz für die fehlende Implementierung von std::move<>().
+Ntemplate<typename TYPE> 
+Ntypename RemRef<TYPE>::Type && StdMove(TYPE && anything) 
+N{
+N  return static_cast<typename RemRef<TYPE>::Type &&>(anything);
+N} 
+N
+N#endif
+N
+L 138 ".\Inc\Debug\Debug.h" 2
+N
+N/// Klasse, um zu Prüfen, ob ein Index gültig ist.
+N/// \tparam TYPE ist der Index-Datentyp.
+N/// \tparam ist die Indexobergrenze (inklusive),
+Ntemplate<typename TYPE, TYPE MAX>
+Nclass CheckIndex
+N{
+N  public:
+N  
+N  CheckIndex() = delete;
+N  
+N  using DataType = typename RemConst<TYPE>::Type;
+N
+N  static constexpr bool const si = IsSINTxx<DataType>::flag;
+N
+N  STATIC_ASSERT(IsUINTxx<DataType>::flag || si);
+X  static_assert(IsUINTxx<DataType> ::flag || si, "IsUINTxx<DataType>::flag || si");
+N
+N  /// Prüfe, ob Index gültig ist.
+N  /// \param indx ist eine Referenz des zu prüfenden Index.
+N  /// \param errfnc ist eine Lambda-Expression, die dann aufzurufen ist wenn der Indes ungültig ist.
+N  /// \tparam FNC ist der Datentype der Lambda-Expression.
+N  /// \return Referenz des Index-Wertes.
+N  template<typename FNC>
+N  static TYPE & Verify(TYPE & indx, FNC const errfnc) noexcept
+N  {
+N    if ( IndexHelper<DataType, si>::Verify(indx, MAX) )
+N    {
+N      ITM_PRINT("!!! Index error: indx=", indx);
+X      ItmPrint("!!! Index error: indx=", indx);
+N      
+N      errfnc();
+N    }
+N    
+N    return indx;
+N  }
+N};
+N
+N/// Klasse, um einen Wert überprüfen zu können.
+Ntemplate<typename TYPE>
+Nclass CheckValue
+N{
+N  public:
+N  
+N  CheckValue() = delete;
+N  
+N  template<typename FNC>
+N  static TYPE & Verify(TYPE & data, FNC const lambda) noexcept
+N  {
+N    STATIC_ASSERT(noexcept(lambda(data)));
+X    static_assert(noexcept(lambda(data)), "noexcept(lambda(data))");
+N    
+N    lambda(data);
+N
+N    return data;
+N  }
+N};
+N
+N# if defined(DEBUG) 
+X# if 1L 
+N
+N[[noreturn]] void AssertionFailed(char const expr[], char const file[], unsigned line, char const func[]) noexcept;
+N[[noreturn]] void ProgramAbortion(char const expr[], char const file[], unsigned line, char const func[]) noexcept;
+N
+N/// Prüfen, ob ein Speicher in gültiges RAM oder ROM zeigt (keine Peripherie).
+N/// \param ptr ist der zu prüfende Zeiger.
+N/// \return \c true, wenn der Zeiger gültig ist.
+Nbool IsValidPointer(void volatile const * ptr) noexcept;
+N
+Ntemplate<typename TYPE> TYPE & __DataTypeConverter(TYPE       & data) noexcept;
+Ntemplate<typename TYPE> TYPE   __DataTypeConverter(TYPE const & data) noexcept;
+N
+N/// Prüfe, on ein Zeiger gültig ist (kann wie p selbst verwendet werden).
+N#  define VERPTR(p)             CheckValue<decltype(__DataTypeConverter(p))>::Verify(p, [] (void volatile const * const xxx) noexcept { if ( ! IsValidPointer(xxx) ) AssertionFailed(#p " is not valid", FILE, LINE, __FUNCTION__); })
+N
+N/// Prüfe ob ein Index gültig ist.
+N#  define VERINDX(i, m)         CheckIndex<decltype(i), m>::Verify(i, [] () noexcept { AssertionFailed("Array index " #i " out of range", FILE, LINE, __FUNCTION__); })
+N
+N#  define ASSERT(c)             ((c) ? (void)0 : AssertionFailed(#c, FILE, LINE, FUNC)) 
+N#  define ABORT(t)              ProgramAbortion(t, FILE, LINE, FUNC)
+N# else
+S#  define VERPTR(p)             (p) 
+S#  define VERINDX(i, m)         (i)
+S
+S#  define ASSERT(c)             ((void)0)
+S#  define ABORT(t)
+N# endif
+N
+N/// Bereichsüberprüfung eines Felkdindex.
+N# define ARRAY_INDX(i, a)       VERINDX(i, ArrayMax(a))
+N
+N/// Zugriff auf ein Feld mit Bereichsüberprüfung des Index.
+N# define ACCESS_ARRAY(a, i)     ((a)[ARRAY_INDX(i, a)])
+N
+Ntemplate<typename TYPE, unsigned DIM>
+Nclass SecureArray final
+N{
+N  public:
+N  
+N  STATIC_ASSERT(DIM > 1U);
+X  static_assert(DIM > 1U, "DIM > 1U");
+N  
+N  using RawArrType = TYPE[DIM];
+N  
+N  SecureArray() noexcept { DBG_MEM_FILL(a); }
+X  SecureArray() noexcept { DbgMemFill(a); }
+N 
+N  template<typename ... ARGS>
+N  SecureArray(ARGS const ... ini) noexcept : 
+N    SecureArray() 
+N  { 
+N    Setup(a, ini ...); 
+N    
+N    STATIC_ASSERT(sizeof ...(ini) <= DIM); 
+X    static_assert(sizeof ...(ini) <= DIM, "sizeof ...(ini) <= DIM"); 
+N  }
+N  
+N  SecureArray(SecureArray const &) = delete;
+N  SecureArray(SecureArray      &&) = delete;
+N
+N  ~SecureArray() = default;
+N
+N  SecureArray & operator = (SecureArray const &) = delete;
+N  SecureArray & operator = (SecureArray      &&) = delete;
+N
+N  FORCE_INLINE TYPE const & operator [] (unsigned const i) const noexcept { return a[VERINDX(i, DIM - 1U)]; }
+X  __forceinline TYPE const & operator [] (unsigned const i) const noexcept { return a[CheckIndex<decltype(i), DIM - 1U> ::Verify(i, [] () noexcept { AssertionFailed("Array index " "i" " out of range", "Debug.h", 256, __FUNCTION__); })]; }
+N  FORCE_INLINE TYPE       & operator [] (unsigned const i)       noexcept { return a[VERINDX(i, DIM - 1U)]; }
+X  __forceinline TYPE       & operator [] (unsigned const i)       noexcept { return a[CheckIndex<decltype(i), DIM - 1U> ::Verify(i, [] () noexcept { AssertionFailed("Array index " "i" " out of range", "Debug.h", 257, __FUNCTION__); })]; }
+N
+N  private:
+N  
+N  template<typename TINI>
+N  FORCE_INLINE static void Setup(TYPE a[], TINI const ini) noexcept { a[0] = ini; }
+X  __forceinline static void Setup(TYPE a[], TINI const ini) noexcept { a[0] = ini; }
+N
+N  template<typename TINI, typename ... ARGS>
+N  FORCE_INLINE static void Setup(TYPE a[], TINI const ini, ARGS const ... more) noexcept { Setup(a, ini); Setup(a + 1U, more ...); }
+X  __forceinline static void Setup(TYPE a[], TINI const ini, ARGS const ... more) noexcept { Setup(a, ini); Setup(a + 1U, more ...); }
+N
+N  RawArrType a;
+N};
+N
+N#endif
+N
+L 10 "Src\Target\PreMain.cpp" 2
+N#include <Cortex.h>
+N
+NIMPORT(__use_realtime_heap)
+X_Pragma("import(__use_realtime_heap)")
+N
+Nextern "C" void __cxa_get_globals(void);
+N
+Nextern "C" void __cxa_pure_virtual()  
+N{ 
+N  ITM_PUTS(__FUNCTION__);
+X  ItmPutS(__FUNCTION__);
+N  DEBUG_BREAK(2);
+X  __breakpoint(2);
+N  
+N  Cortex::Reset();
+N}
+N
+Nextern "C" int __aeabi_atexit(void *, void (*)(void *), void * d) 
+N{ 
+N  // Keine at-exit-Funktionen, da das Programm nie beendet wird bzw. über Reset beu gestartet wird.
+N  
+N  return 0; // 0 ==> OK; non-0 ==> failed 
+N}
+N  
+Nextern "C" int __aeabi_idiv0(void) 
+N{ 
+N  ITM_PUTS(__FUNCTION__);
+X  ItmPutS(__FUNCTION__);
+N  DEBUG_BREAK(2); 
+X  __breakpoint(2); 
+N  
+N  return 0;
+N}
+N
+Nextern "C" void __ARM_exceptions_init(void) { __cxa_get_globals(); } // pre-allocate memory for exceptions
+N
+N# include <signal.h>
+L 1 "C:\Keil_v5\ARM\ARMCC\Bin\..\include\signal.h" 1
+N/* signal.h
+N *
+N * Copyright (C) Codemist Ltd., 1988-1993.
+N * Copyright 1991-1999 ARM Limited. All rights reserved.
+N *
+N * RCS $Revision$
+N * Checkin $Date$
+N * Revising $Author: statham $
+N */
+N
+N/*
+N * signal.h declares a type and two functions and defines several macros, for
+N * handling various signals (conditions that may be reported during program
+N * execution).
+N */
+N
+N#ifndef __signal_h
+N#define __signal_h
+N#define __ARMCLIB_VERSION 5060037
+N
+N  #ifndef __SIGNAL_DECLS
+N  #define __SIGNAL_DECLS
+N
+N    #undef __CLIBNS
+N
+N    #ifdef __cplusplus
+N      namespace std {
+N          #define __CLIBNS std::
+N          extern "C" {
+N    #else
+S      #define __CLIBNS
+N    #endif  /* __cplusplus */
+N
+N
+Ntypedef int sig_atomic_t;
+N   /* type which is the integral type of an object that can be modified as */
+N   /* an atomic entity, even in the presence of asynchronous interrupts. */
+N
+N#if _AEABI_PORTABILITY_LEVEL != 0 && !defined _AEABI_PORTABLE
+X#if _AEABI_PORTABILITY_LEVEL != 0 && !0L
+S  #define _AEABI_PORTABLE
+N#endif
+N
+N#if _AEABI_PORTABILITY_LEVEL != 0 || (!defined _AEABI_PORTABILITY_LEVEL && __DEFAULT_AEABI_PORTABILITY_LEVEL != 0)
+X#if _AEABI_PORTABILITY_LEVEL != 0 || (!0L && __DEFAULT_AEABI_PORTABILITY_LEVEL != 0)
+S
+Sextern void __aeabi_SIG_DFL(int);
+S#define SIG_DFL (__CLIBNS __aeabi_SIG_DFL)
+Sextern void __aeabi_SIG_ERR(int);
+S#define SIG_ERR (__CLIBNS __aeabi_SIG_ERR)
+Sextern void __aeabi_SIG_IGN(int);
+S#define SIG_IGN (__CLIBNS __aeabi_SIG_IGN)
+S
+Sextern const int __aeabi_SIGABRT;
+S#define SIGABRT (__CLIBNS __aeabi_SIGABRT)
+Sextern const int __aeabi_SIGFPE;
+S#define SIGFPE (__CLIBNS __aeabi_SIGFPE)
+Sextern const int __aeabi_SIGILL;
+S#define SIGILL (__CLIBNS __aeabi_SIGILL)
+Sextern const int __aeabi_SIGINT;
+S#define SIGINT (__CLIBNS __aeabi_SIGINT)
+Sextern const int __aeabi_SIGSEGV;
+S#define SIGSEGV (__CLIBNS __aeabi_SIGSEGV)
+Sextern const int __aeabi_SIGTERM;
+S#define SIGTERM (__CLIBNS __aeabi_SIGTERM)
+S
+N#else
+N
+N   /*
+N    * Each of the following macros expand to a constant expression with a
+N    * distinct value and has the same type as the second argument to, and the
+N    * return value of the signal function, and whose value compares unequal to
+N    * the address of any declarable function.  Use a typedef to ensure that
+N    * the function pointer type is extern "C".
+N    */
+Ntypedef void(*__ARM_sigh_t)(int);
+N#define SIG_DFL ( (__CLIBNS __ARM_sigh_t) -1 )
+N#define SIG_ERR ( (__CLIBNS __ARM_sigh_t) -2 )
+N#define SIG_IGN ( (__CLIBNS __ARM_sigh_t) -3 )
+N
+N   /*
+N    * Each of the following macros expand to a positive integral constant
+N    * expression that is the signal number corresponding the the specified
+N    * condition.
+N    */
+N#define SIGABRT   1 /* abort                         */
+N#define SIGFPE    2 /* arithmetic exception          */
+N#define SIGILL    3 /* illegal instruction           */
+N#define SIGINT    4 /* attention request from user   */
+N#define SIGSEGV   5 /* bad memory access             */
+N#define SIGTERM   6 /* termination request           */
+N#endif
+N
+N   /* (these following macros are not part of the ANSI standard,
+N    * but private to this implementation)
+N    */
+N#define SIGSTAK   7  /* stack overflow                */
+N#define SIGRTRED  8  /* run-time redirection error    */
+N#define SIGRTMEM  9  /* run-time memory error         */
+N/* Signal numbers 10 and 11 are available for the user */
+N#define SIGUSR1  10
+N#define SIGUSR2  11
+N#define SIGPVFN  12 /* pure virtual function called   */
+N#define SIGCPPL  13 /* miscellaneous exception from C++ library */
+N#define SIGOUTOFHEAP 14 /* ::operator new or new[] cannot allocate memory */
+N/* Signal numbers 15-31 are reserved to the implementation */
+N/* Signal numbers 32 and larger are for more user signals */
+N
+Nextern void (*signal (int /*sig*/, void (* /*func*/ )(int)))(int) __attribute__((__nonnull__(2)));
+N   /*
+N    * Chooses one of three ways in which receipt of the signal number sig is to
+N    * be subsequently handled. If the value of func is SIG_DFL, default
+N    * handling for that signal will occur. If the value of func is SIG_IGN, the
+N    * signal will be ignored. Otherwise func shall point to a function to be
+N    * called when that signal occurs.
+N    * When a signal occurs, if func points to a function, first the
+N    * equivalent of signal(sig, SIG_DFL); is executed. (If the value of sig
+N    * is SIGILL, whether the reset to SIG_DFL occurs is implementation-
+N    * defined). Next the equivalent of (*func)(sig); is executed. The
+N    * function may terminate by calling the abort, exit or longjmp function.
+N    * If func executes a return statement and the value of sig was SIGFPE or
+N    * any other implementation-defined value corresponding to a computational
+N    * exception, the behaviour is undefined. Otherwise, the program will
+N    * resume execution at the point it was interrupted.
+N    * If the signal occurs other than as a result of calling the abort or raise
+N    * function, the behaviour is undefined if the signal handler calls any
+N    * function in the standard library other than the signal function itself
+N    * or refers to any object with static storage duration other than by
+N    * assigning a value to a volatile static variable of type sig_atomic_t.
+N    * At program startup, the equivalent of signal(sig, SIG_IGN); may be
+N    * executed for some signals selected in an implementation-defined manner;
+N    * the equivalent of signal(sig, SIG_DFL); is executed for all other
+N    * signals defined by the implementation.
+N    * Returns: If the request can be honoured, the signal function returns the
+N    *          value of func for most recent call to signal for the specified
+N    *          signal sig. Otherwise, a value of SIG_ERR is returned and the
+N    *          integer expression errno is set to indicate the error.
+N    */
+N
+Nextern int raise(int /*sig*/);
+N   /* sends the signal sig to the executing program. */
+N   /* Returns: zero if successful, non-zero if unsuccessful. */
+N
+N#define _DIVBYZERO 2                   /* SIGFPE param for integer div-by-0 */
+N#ifndef __STRICT_ANSI__
+N#define DIVBYZERO 2                    /* SIGFPE param for integer div-by-0 */
+N#endif
+N
+N    #ifdef __cplusplus
+N         }  /* extern "C" */
+N      }  /* namespace std */
+N    #endif /* __cplusplus */ 
+N  #endif /* __SIGNAL_DECLS */
+N
+N  #ifdef __cplusplus
+N    #ifndef __SIGNAL_NO_EXPORTS
+N      using ::std::sig_atomic_t;
+N      using ::std::raise;
+N      using ::std::signal;
+N    #endif 
+N  #endif /* __cplusplus */ 
+N
+N#endif
+N
+N/* end of signal.h */
+N
+L 42 "Src\Target\PreMain.cpp" 2
+N# include <stdlib.h>
+L 1 "C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h" 1
+N/* stdlib.h: ANSI draft (X3J11 May 88) library header, section 4.10 */
+N/* Copyright (C) Codemist Ltd., 1988-1993.                          */
+N/* Copyright 1991-1998,2014 ARM Limited. All rights reserved.       */
+N/*
+N * RCS $Revision$
+N * Checkin $Date$
+N * Revising $Author: agrant $
+N */
+N 
+N/*
+N * stdlib.h declares four types, several general purpose functions,
+N * and defines several macros.
+N */
+N
+N#ifndef __stdlib_h
+N#define __stdlib_h
+N#define __ARMCLIB_VERSION 5060037
+N
+N#if defined(__clang__) || (defined(__ARMCC_VERSION) && !defined(__STRICT_ANSI__))
+X#if 0L || (1L && !0L)
+N  /* armclang and non-strict armcc allow 'long long' in system headers */
+N  #define __LONGLONG long long
+N#else
+S  /* strict armcc has '__int64' */
+S  #define __LONGLONG __int64
+N#endif
+N
+N#define _ARMABI __declspec(__nothrow)
+N#define _ARMABI_PURE __declspec(__nothrow) __attribute__((const))
+N#define _ARMABI_NORETURN __declspec(__nothrow) __declspec(__noreturn)
+N#define _ARMABI_THROW
+N
+N  #ifndef __STDLIB_DECLS
+N  #define __STDLIB_DECLS
+N
+N  /*
+N   * Some of these declarations are new in C99.  To access them in C++
+N   * you can use -D__USE_C99_STDLIB (or -D__USE_C99ALL).
+N   */
+N  #ifndef __USE_C99_STDLIB
+N    #if defined(__USE_C99_ALL) || (defined(__STDC_VERSION__) && 199901L <= __STDC_VERSION__) || (defined(__cplusplus) && 201103L <= __cplusplus)
+X    #if 0L || (0L && 199901L <= __STDC_VERSION__) || (1L && 201103L <= 201103L)
+N      #define __USE_C99_STDLIB 1
+N    #endif
+N  #endif
+N
+N    #undef __CLIBNS
+N
+N    #ifdef __cplusplus
+N      namespace std {
+N          #define __CLIBNS ::std::
+N          extern "C" {
+N    #else
+S      #define __CLIBNS
+N    #endif  /* __cplusplus */
+N
+N#if defined(__cplusplus) || !defined(__STRICT_ANSI__)
+X#if 1L || !0L
+N /* unconditional in C++ and non-strict C for consistency of debug info */
+N  #if __sizeof_ptr == 8
+X  #if 4 == 8
+S    typedef unsigned long size_t;   /* see <stddef.h> */
+N  #else
+N    typedef unsigned int size_t;   /* see <stddef.h> */
+N  #endif
+N#elif !defined(__size_t)
+S  #define __size_t 1
+S  #if __sizeof_ptr == 8
+S    typedef unsigned long size_t;   /* see <stddef.h> */
+S  #else
+S    typedef unsigned int size_t;   /* see <stddef.h> */
+S  #endif
+N#endif
+N
+N#undef NULL
+N#define NULL 0                   /* see <stddef.h> */
+N
+N#ifndef __cplusplus  /* wchar_t is a builtin type for C++ */
+S  #if !defined(__STRICT_ANSI__)
+S   /* unconditional in non-strict C for consistency of debug info */
+S   #if defined(__WCHAR32) || (defined(__ARM_SIZEOF_WCHAR_T) && __ARM_SIZEOF_WCHAR_T == 4)
+S    typedef unsigned int wchar_t; /* see <stddef.h> */
+S   #else
+S    typedef unsigned short wchar_t; /* see <stddef.h> */
+S   #endif
+S  #elif !defined(__wchar_t)
+S    #define __wchar_t 1
+S   #if defined(__WCHAR32) || (defined(__ARM_SIZEOF_WCHAR_T) && __ARM_SIZEOF_WCHAR_T == 4)
+S    typedef unsigned int wchar_t; /* see <stddef.h> */
+S   #else
+S    typedef unsigned short wchar_t; /* see <stddef.h> */
+S   #endif
+S  #endif
+N#endif
+N
+Ntypedef struct div_t { int quot, rem; } div_t;
+N   /* type of the value returned by the div function. */
+Ntypedef struct ldiv_t { long int quot, rem; } ldiv_t;
+N   /* type of the value returned by the ldiv function. */
+N#if !defined(__STRICT_ANSI__) || __USE_C99_STDLIB
+X#if !0L || 1
+Ntypedef struct lldiv_t { __LONGLONG quot, rem; } lldiv_t;
+Xtypedef struct lldiv_t { long long quot, rem; } lldiv_t;
+N   /* type of the value returned by the lldiv function. */
+N#endif
+N
+N#ifdef __EXIT_FAILURE
+S#  define EXIT_FAILURE __EXIT_FAILURE
+S   /*
+S    * an integral expression which may be used as an argument to the exit
+S    * function to return unsuccessful termination status to the host
+S    * environment.
+S    */
+N#else
+N#  define EXIT_FAILURE 1  /* unixoid */
+N#endif
+N#define EXIT_SUCCESS 0
+N   /*
+N    * an integral expression which may be used as an argument to the exit
+N    * function to return successful termination status to the host
+N    * environment.
+N    */
+N
+N   /*
+N    * Defining __USE_ANSI_EXAMPLE_RAND at compile time switches to
+N    * the example implementation of rand() and srand() provided in
+N    * the ANSI C standard. This implementation is very poor, but is
+N    * provided for completeness.
+N    */
+N#ifdef __USE_ANSI_EXAMPLE_RAND
+S#define srand _ANSI_srand
+S#define rand _ANSI_rand
+S#define RAND_MAX 0x7fff
+N#else
+N#define RAND_MAX 0x7fffffff
+N#endif
+N   /*
+N    * RAND_MAX: an integral constant expression, the value of which
+N    * is the maximum value returned by the rand function.
+N    */
+Nextern _ARMABI int __aeabi_MB_CUR_MAX(void);
+Xextern __declspec(__nothrow) int __aeabi_MB_CUR_MAX(void);
+N#define MB_CUR_MAX ( __aeabi_MB_CUR_MAX() )
+N   /*
+N    * a positive integer expression whose value is the maximum number of bytes
+N    * in a multibyte character for the extended character set specified by the
+N    * current locale (category LC_CTYPE), and whose value is never greater
+N    * than MB_LEN_MAX.
+N    */
+N
+N   /*
+N    * If the compiler supports signalling nans as per N965 then it
+N    * will define __SUPPORT_SNAN__, in which case a user may define
+N    * _WANT_SNAN in order to obtain a compliant version of the strtod
+N    * family of functions.
+N    */
+N#if defined(__SUPPORT_SNAN__) && defined(_WANT_SNAN)
+X#if 0L && 0L
+S#pragma import(__use_snan)
+N#endif
+N
+Nextern _ARMABI double atof(const char * /*nptr*/) __attribute__((__nonnull__(1)));
+Xextern __declspec(__nothrow) double atof(const char *  ) __attribute__((__nonnull__(1)));
+N   /*
+N    * converts the initial part of the string pointed to by nptr to double
+N    * representation.
+N    * Returns: the converted value.
+N    */
+Nextern _ARMABI int atoi(const char * /*nptr*/) __attribute__((__nonnull__(1)));
+Xextern __declspec(__nothrow) int atoi(const char *  ) __attribute__((__nonnull__(1)));
+N   /*
+N    * converts the initial part of the string pointed to by nptr to int
+N    * representation.
+N    * Returns: the converted value.
+N    */
+Nextern _ARMABI long int atol(const char * /*nptr*/) __attribute__((__nonnull__(1)));
+Xextern __declspec(__nothrow) long int atol(const char *  ) __attribute__((__nonnull__(1)));
+N   /*
+N    * converts the initial part of the string pointed to by nptr to long int
+N    * representation.
+N    * Returns: the converted value.
+N    */
+N#if !defined(__STRICT_ANSI__) || __USE_C99_STDLIB
+X#if !0L || 1
+Nextern _ARMABI __LONGLONG atoll(const char * /*nptr*/) __attribute__((__nonnull__(1)));
+Xextern __declspec(__nothrow) long long atoll(const char *  ) __attribute__((__nonnull__(1)));
+N   /*
+N    * converts the initial part of the string pointed to by nptr to
+N    * long long int representation.
+N    * Returns: the converted value.
+N    */
+N#endif
+N
+Nextern _ARMABI double strtod(const char * __restrict /*nptr*/, char ** __restrict /*endptr*/) __attribute__((__nonnull__(1)));
+Xextern __declspec(__nothrow) double strtod(const char * __restrict  , char ** __restrict  ) __attribute__((__nonnull__(1)));
+N   /*
+N    * converts the initial part of the string pointed to by nptr to double
+N    * representation. First it decomposes the input string into three parts:
+N    * an initial, possibly empty, sequence of white-space characters (as
+N    * specified by the isspace function), a subject sequence resembling a
+N    * floating point constant; and a final string of one or more unrecognised
+N    * characters, including the terminating null character of the input string.
+N    * Then it attempts to convert the subject sequence to a floating point
+N    * number, and returns the result. A pointer to the final string is stored
+N    * in the object pointed to by endptr, provided that endptr is not a null
+N    * pointer.
+N    * Returns: the converted value if any. If no conversion could be performed,
+N    *          zero is returned. If the correct value is outside the range of
+N    *          representable values, plus or minus HUGE_VAL is returned
+N    *          (according to the sign of the value), and the value of the macro
+N    *          ERANGE is stored in errno. If the correct value would cause
+N    *          underflow, zero is returned and the value of the macro ERANGE is
+N    *          stored in errno.
+N    */
+N#if !defined(__STRICT_ANSI__) || __USE_C99_STDLIB
+X#if !0L || 1
+Nextern _ARMABI float strtof(const char * __restrict /*nptr*/, char ** __restrict /*endptr*/) __attribute__((__nonnull__(1)));
+Xextern __declspec(__nothrow) float strtof(const char * __restrict  , char ** __restrict  ) __attribute__((__nonnull__(1)));
+Nextern _ARMABI long double strtold(const char * __restrict /*nptr*/, char ** __restrict /*endptr*/) __attribute__((__nonnull__(1)));
+Xextern __declspec(__nothrow) long double strtold(const char * __restrict  , char ** __restrict  ) __attribute__((__nonnull__(1)));
+N   /*
+N    * same as strtod, but return float and long double respectively.
+N    */
+N#endif
+Nextern _ARMABI long int strtol(const char * __restrict /*nptr*/,
+Xextern __declspec(__nothrow) long int strtol(const char * __restrict  ,
+N                        char ** __restrict /*endptr*/, int /*base*/) __attribute__((__nonnull__(1)));
+N   /*
+N    * converts the initial part of the string pointed to by nptr to long int
+N    * representation. First it decomposes the input string into three parts:
+N    * an initial, possibly empty, sequence of white-space characters (as
+N    * specified by the isspace function), a subject sequence resembling an
+N    * integer represented in some radix determined by the value of base, and a
+N    * final string of one or more unrecognised characters, including the
+N    * terminating null character of the input string. Then it attempts to
+N    * convert the subject sequence to an integer, and returns the result.
+N    * If the value of base is 0, the expected form of the subject sequence is
+N    * that of an integer constant (described in ANSI Draft, section 3.1.3.2),
+N    * optionally preceded by a '+' or '-' sign, but not including an integer
+N    * suffix. If the value of base is between 2 and 36, the expected form of
+N    * the subject sequence is a sequence of letters and digits representing an
+N    * integer with the radix specified by base, optionally preceded by a plus
+N    * or minus sign, but not including an integer suffix. The letters from a
+N    * (or A) through z (or Z) are ascribed the values 10 to 35; only letters
+N    * whose ascribed values are less than that of the base are permitted. If
+N    * the value of base is 16, the characters 0x or 0X may optionally precede
+N    * the sequence of letters and digits following the sign if present.
+N    * A pointer to the final string is stored in the object
+N    * pointed to by endptr, provided that endptr is not a null pointer.
+N    * Returns: the converted value if any. If no conversion could be performed,
+N    *          zero is returned and nptr is stored in *endptr.
+N    *          If the correct value is outside the range of
+N    *          representable values, LONG_MAX or LONG_MIN is returned
+N    *          (according to the sign of the value), and the value of the
+N    *          macro ERANGE is stored in errno.
+N    */
+Nextern _ARMABI unsigned long int strtoul(const char * __restrict /*nptr*/,
+Xextern __declspec(__nothrow) unsigned long int strtoul(const char * __restrict  ,
+N                                       char ** __restrict /*endptr*/, int /*base*/) __attribute__((__nonnull__(1)));
+N   /*
+N    * converts the initial part of the string pointed to by nptr to unsigned
+N    * long int representation. First it decomposes the input string into three
+N    * parts: an initial, possibly empty, sequence of white-space characters (as
+N    * determined by the isspace function), a subject sequence resembling an
+N    * unsigned integer represented in some radix determined by the value of
+N    * base, and a final string of one or more unrecognised characters,
+N    * including the terminating null character of the input string. Then it
+N    * attempts to convert the subject sequence to an unsigned integer, and
+N    * returns the result. If the value of base is zero, the expected form of
+N    * the subject sequence is that of an integer constant (described in ANSI
+N    * Draft, section 3.1.3.2), optionally preceded by a '+' or '-' sign, but
+N    * not including an integer suffix. If the value of base is between 2 and
+N    * 36, the expected form of the subject sequence is a sequence of letters
+N    * and digits representing an integer with the radix specified by base,
+N    * optionally preceded by a '+' or '-' sign, but not including an integer
+N    * suffix. The letters from a (or A) through z (or Z) stand for the values
+N    * 10 to 35; only letters whose ascribed values are less than that of the
+N    * base are permitted. If the value of base is 16, the characters 0x or 0X
+N    * may optionally precede the sequence of letters and digits following the
+N    * sign, if present. A pointer to the final string is stored in the object
+N    * pointed to by endptr, provided that endptr is not a null pointer.
+N    * Returns: the converted value if any. If no conversion could be performed,
+N    *          zero is returned and nptr is stored in *endptr.
+N    *          If the correct value is outside the range of
+N    *          representable values, ULONG_MAX is returned, and the value of
+N    *          the macro ERANGE is stored in errno.
+N    */
+N
+N/* C90 reserves all names beginning with 'str' */
+Nextern _ARMABI __LONGLONG strtoll(const char * __restrict /*nptr*/,
+Xextern __declspec(__nothrow) long long strtoll(const char * __restrict  ,
+N                                  char ** __restrict /*endptr*/, int /*base*/)
+N                          __attribute__((__nonnull__(1)));
+N   /*
+N    * as strtol but returns a long long int value.  If the correct value is
+N    * outside the range of representable values,  LLONG_MAX or LLONG_MIN is
+N    * returned (according to the sign of the value), and the value of the
+N    * macro ERANGE is stored in errno.
+N    */
+Nextern _ARMABI unsigned __LONGLONG strtoull(const char * __restrict /*nptr*/,
+Xextern __declspec(__nothrow) unsigned long long strtoull(const char * __restrict  ,
+N                                            char ** __restrict /*endptr*/, int /*base*/)
+N                                   __attribute__((__nonnull__(1)));
+N   /*
+N    * as strtoul but returns an unsigned long long int value.  If the correct
+N    * value is outside the range of representable values, ULLONG_MAX is returned,
+N    * and the value of the macro ERANGE is stored in errno.
+N    */
+N
+Nextern _ARMABI int rand(void);
+Xextern __declspec(__nothrow) int rand(void);
+N   /*
+N    * Computes a sequence of pseudo-random integers in the range 0 to RAND_MAX.
+N    * Uses an additive generator (Mitchell & Moore) of the form:
+N    *   Xn = (X[n-24] + X[n-55]) MOD 2^31
+N    * This is described in section 3.2.2 of Knuth, vol 2. It's period is
+N    * in excess of 2^55 and its randomness properties, though unproven, are
+N    * conjectured to be good. Empirical testing since 1958 has shown no flaws.
+N    * Returns: a pseudo-random integer.
+N    */
+Nextern _ARMABI void srand(unsigned int /*seed*/);
+Xextern __declspec(__nothrow) void srand(unsigned int  );
+N   /*
+N    * uses its argument as a seed for a new sequence of pseudo-random numbers
+N    * to be returned by subsequent calls to rand. If srand is then called with
+N    * the same seed value, the sequence of pseudo-random numbers is repeated.
+N    * If rand is called before any calls to srand have been made, the same
+N    * sequence is generated as when srand is first called with a seed value
+N    * of 1.
+N    */
+N
+Nstruct _rand_state { int __x[57]; };
+Nextern _ARMABI int _rand_r(struct _rand_state *);
+Xextern __declspec(__nothrow) int _rand_r(struct _rand_state *);
+Nextern _ARMABI void _srand_r(struct _rand_state *, unsigned int);
+Xextern __declspec(__nothrow) void _srand_r(struct _rand_state *, unsigned int);
+Nstruct _ANSI_rand_state { int __x[1]; };
+Nextern _ARMABI int _ANSI_rand_r(struct _ANSI_rand_state *);
+Xextern __declspec(__nothrow) int _ANSI_rand_r(struct _ANSI_rand_state *);
+Nextern _ARMABI void _ANSI_srand_r(struct _ANSI_rand_state *, unsigned int);
+Xextern __declspec(__nothrow) void _ANSI_srand_r(struct _ANSI_rand_state *, unsigned int);
+N   /*
+N    * Re-entrant variants of both flavours of rand, which operate on
+N    * an explicitly supplied state buffer.
+N    */
+N
+Nextern _ARMABI void *calloc(size_t /*nmemb*/, size_t /*size*/);
+Xextern __declspec(__nothrow) void *calloc(size_t  , size_t  );
+N   /*
+N    * allocates space for an array of nmemb objects, each of whose size is
+N    * 'size'. The space is initialised to all bits zero.
+N    * Returns: either a null pointer or a pointer to the allocated space.
+N    */
+Nextern _ARMABI void free(void * /*ptr*/);
+Xextern __declspec(__nothrow) void free(void *  );
+N   /*
+N    * causes the space pointed to by ptr to be deallocated (i.e., made
+N    * available for further allocation). If ptr is a null pointer, no action
+N    * occurs. Otherwise, if ptr does not match a pointer earlier returned by
+N    * calloc, malloc or realloc or if the space has been deallocated by a call
+N    * to free or realloc, the behaviour is undefined.
+N    */
+Nextern _ARMABI void *malloc(size_t /*size*/);
+Xextern __declspec(__nothrow) void *malloc(size_t  );
+N   /*
+N    * allocates space for an object whose size is specified by 'size' and whose
+N    * value is indeterminate.
+N    * Returns: either a null pointer or a pointer to the allocated space.
+N    */
+Nextern _ARMABI void *realloc(void * /*ptr*/, size_t /*size*/);
+Xextern __declspec(__nothrow) void *realloc(void *  , size_t  );
+N   /*
+N    * changes the size of the object pointed to by ptr to the size specified by
+N    * size. The contents of the object shall be unchanged up to the lesser of
+N    * the new and old sizes. If the new size is larger, the value of the newly
+N    * allocated portion of the object is indeterminate. If ptr is a null
+N    * pointer, the realloc function behaves like a call to malloc for the
+N    * specified size. Otherwise, if ptr does not match a pointer earlier
+N    * returned by calloc, malloc or realloc, or if the space has been
+N    * deallocated by a call to free or realloc, the behaviour is undefined.
+N    * If the space cannot be allocated, the object pointed to by ptr is
+N    * unchanged. If size is zero and ptr is not a null pointer, the object it
+N    * points to is freed.
+N    * Returns: either a null pointer or a pointer to the possibly moved
+N    *          allocated space.
+N    */
+N#if !defined(__STRICT_ANSI__)
+X#if !0L
+Nextern _ARMABI int posix_memalign(void ** /*ret*/, size_t /*alignment*/, size_t /*size*/);
+Xextern __declspec(__nothrow) int posix_memalign(void **  , size_t  , size_t  );
+N   /*
+N    * allocates space for an object of size 'size', aligned to a
+N    * multiple of 'alignment' (which must be a power of two and at
+N    * least 4).
+N    *
+N    * On success, a pointer to the allocated object is stored in
+N    * *ret, and zero is returned. On failure, the return value is
+N    * either ENOMEM (allocation failed because no suitable piece of
+N    * memory was available) or EINVAL (the 'alignment' parameter was
+N    * invalid).
+N    */
+N#endif
+Ntypedef int (*__heapprt)(void *, char const *, ...);
+Nextern _ARMABI void __heapstats(int (* /*dprint*/)(void * /*param*/,
+Xextern __declspec(__nothrow) void __heapstats(int (*  )(void *  ,
+N                                           char const * /*format*/, ...),
+N                        void * /*param*/) __attribute__((__nonnull__(1)));
+N   /*
+N    * reports current heap statistics (eg. number of free blocks in
+N    * the free-list). Output is as implementation-defined free-form
+N    * text, provided via the dprint function. `param' gives an
+N    * extra data word to pass to dprint. You can call
+N    * __heapstats(fprintf,stdout) by casting fprintf to the above
+N    * function type; the typedef `__heapprt' is provided for this
+N    * purpose.
+N    *
+N    * `dprint' will not be called while the heap is being examined,
+N    * so it can allocate memory itself without trouble.
+N    */
+Nextern _ARMABI int __heapvalid(int (* /*dprint*/)(void * /*param*/,
+Xextern __declspec(__nothrow) int __heapvalid(int (*  )(void *  ,
+N                                           char const * /*format*/, ...),
+N                       void * /*param*/, int /*verbose*/) __attribute__((__nonnull__(1)));
+N   /*
+N    * performs a consistency check on the heap. Errors are reported
+N    * through dprint, like __heapstats. If `verbose' is nonzero,
+N    * full diagnostic information on the heap state is printed out.
+N    *
+N    * This routine probably won't work if the heap isn't a
+N    * contiguous chunk (for example, if __user_heap_extend has been
+N    * overridden).
+N    *
+N    * `dprint' may be called while the heap is being examined or
+N    * even in an invalid state, so it must perform no memory
+N    * allocation. In particular, if `dprint' calls (or is) a stdio
+N    * function, the stream it outputs to must already have either
+N    * been written to or been setvbuf'ed, or else the system will
+N    * allocate buffer space for it on the first call to dprint.
+N    */
+Nextern _ARMABI_NORETURN void abort(void);
+Xextern __declspec(__nothrow) __declspec(__noreturn) void abort(void);
+N   /*
+N    * causes abnormal program termination to occur, unless the signal SIGABRT
+N    * is being caught and the signal handler does not return. Whether open
+N    * output streams are flushed or open streams are closed or temporary
+N    * files removed is implementation-defined.
+N    * An implementation-defined form of the status 'unsuccessful termination'
+N    * is returned to the host environment by means of a call to
+N    * raise(SIGABRT).
+N    */
+N
+Nextern _ARMABI int atexit(void (* /*func*/)(void)) __attribute__((__nonnull__(1)));
+Xextern __declspec(__nothrow) int atexit(void (*  )(void)) __attribute__((__nonnull__(1)));
+N   /*
+N    * registers the function pointed to by func, to be called without its
+N    * arguments at normal program termination. It is possible to register at
+N    * least 32 functions.
+N    * Returns: zero if the registration succeeds, nonzero if it fails.
+N    */
+N#if defined(__EDG__) && !defined(__GNUC__)
+X#if 1L && !0L
+N#define __LANGUAGE_LINKAGE_CHANGES_FUNCTION_TYPE
+N#endif
+N#if defined(__cplusplus) && defined(__LANGUAGE_LINKAGE_CHANGES_FUNCTION_TYPE) 
+X#if 1L && 1L 
+N    /* atexit that takes a ptr to a function with C++ linkage 
+N     * but not in GNU mode  
+N     */
+N    typedef void (* __C_exitfuncptr)();
+N    extern "C++"
+N    inline int atexit(void (* __func)()) {
+N      return atexit((__C_exitfuncptr)__func);
+N    }
+N#endif
+N
+N
+Nextern _ARMABI_NORETURN void exit(int /*status*/);
+Xextern __declspec(__nothrow) __declspec(__noreturn) void exit(int  );
+N   /*
+N    * causes normal program termination to occur. If more than one call to the
+N    * exit function is executed by a program, the behaviour is undefined.
+N    * First, all functions registered by the atexit function are called, in the
+N    * reverse order of their registration.
+N    * Next, all open output streams are flushed, all open streams are closed,
+N    * and all files created by the tmpfile function are removed.
+N    * Finally, control is returned to the host environment. If the value of
+N    * status is zero or EXIT_SUCCESS, an implementation-defined form of the
+N    * status 'successful termination' is returned. If the value of status is
+N    * EXIT_FAILURE, an implementation-defined form of the status
+N    * 'unsuccessful termination' is returned. Otherwise the status returned
+N    * is implementation-defined.
+N    */
+N
+Nextern _ARMABI_NORETURN void _Exit(int /*status*/);
+Xextern __declspec(__nothrow) __declspec(__noreturn) void _Exit(int  );
+N   /*
+N    * causes normal program termination to occur. No functions registered
+N    * by the atexit function are called.
+N    * In this implementation, all open output streams are flushed, all
+N    * open streams are closed, and all files created by the tmpfile function
+N    * are removed.
+N    * Control is returned to the host environment. The status returned to
+N    * the host environment is determined in the same way as for 'exit'.
+N    */     
+N
+Nextern _ARMABI char *getenv(const char * /*name*/) __attribute__((__nonnull__(1)));
+Xextern __declspec(__nothrow) char *getenv(const char *  ) __attribute__((__nonnull__(1)));
+N   /*
+N    * searches the environment list, provided by the host environment, for a
+N    * string that matches the string pointed to by name. The set of environment
+N    * names and the method for altering the environment list are
+N    * implementation-defined.
+N    * Returns: a pointer to a string associated with the matched list member.
+N    *          The array pointed to shall not be modified by the program, but
+N    *          may be overwritten by a subsequent call to the getenv function.
+N    *          If the specified name cannot be found, a null pointer is
+N    *          returned.
+N    */
+N
+Nextern _ARMABI int  system(const char * /*string*/);
+Xextern __declspec(__nothrow) int  system(const char *  );
+N   /*
+N    * passes the string pointed to by string to the host environment to be
+N    * executed by a command processor in an implementation-defined manner.
+N    * A null pointer may be used for string, to inquire whether a command
+N    * processor exists.
+N    *
+N    * Returns: If the argument is a null pointer, the system function returns
+N    *          non-zero only if a command processor is available. If the
+N    *          argument is not a null pointer, the system function returns an
+N    *          implementation-defined value.
+N    */
+N
+Nextern _ARMABI_THROW void *bsearch(const void * /*key*/, const void * /*base*/,
+Xextern  void *bsearch(const void *  , const void *  ,
+N              size_t /*nmemb*/, size_t /*size*/,
+N              int (* /*compar*/)(const void *, const void *)) __attribute__((__nonnull__(1,2,5)));
+N   /*
+N    * searches an array of nmemb objects, the initial member of which is
+N    * pointed to by base, for a member that matches the object pointed to by
+N    * key. The size of each member of the array is specified by size.
+N    * The contents of the array shall be in ascending sorted order according to
+N    * a comparison function pointed to by compar, which is called with two
+N    * arguments that point to the key object and to an array member, in that
+N    * order. The function shall return an integer less than, equal to, or
+N    * greater than zero if the key object is considered, respectively, to be
+N    * less than, to match, or to be greater than the array member.
+N    * Returns: a pointer to a matching member of the array, or a null pointer
+N    *          if no match is found. If two members compare as equal, which
+N    *          member is matched is unspecified.
+N    */
+N#if defined(__cplusplus) && defined(__LANGUAGE_LINKAGE_CHANGES_FUNCTION_TYPE)
+X#if 1L && 1L
+N    /* bsearch that takes a ptr to a function with C++ linkage 
+N     * but not in GNU mode
+N     */
+N    typedef int (* __C_compareprocptr)(const void *, const void *);
+N    extern "C++"
+N    void *bsearch(const void * __key, const void * __base,
+N              size_t __nmemb, size_t __size,
+N              int (* __compar)(const void *, const void *)) __attribute__((__nonnull__(1,2,5)));
+N    extern "C++"
+N    inline void *bsearch(const void * __key, const void * __base,
+N              size_t __nmemb, size_t __size,
+N              int (* __compar)(const void *, const void *)) {
+N      return bsearch(__key, __base, __nmemb, __size, (__C_compareprocptr)__compar);
+N    }
+N#endif
+N
+N
+Nextern _ARMABI_THROW void qsort(void * /*base*/, size_t /*nmemb*/, size_t /*size*/,
+Xextern  void qsort(void *  , size_t  , size_t  ,
+N           int (* /*compar*/)(const void *, const void *)) __attribute__((__nonnull__(1,4)));
+N   /*
+N    * sorts an array of nmemb objects, the initial member of which is pointed
+N    * to by base. The size of each object is specified by size.
+N    * The contents of the array shall be in ascending order according to a
+N    * comparison function pointed to by compar, which is called with two
+N    * arguments that point to the objects being compared. The function shall
+N    * return an integer less than, equal to, or greater than zero if the first
+N    * argument is considered to be respectively less than, equal to, or greater
+N    * than the second. If two members compare as equal, their order in the
+N    * sorted array is unspecified.
+N    */
+N
+N#if defined(__cplusplus) && defined(__LANGUAGE_LINKAGE_CHANGES_FUNCTION_TYPE)
+X#if 1L && 1L
+N    /* qsort that takes a ptr to a function with C++ linkage 
+N     * but not in GNU mode
+N     */    
+N    extern "C++"
+N    void qsort(void * __base, size_t __nmemb, size_t __size,
+N               int (* __compar)(const void *, const void *)) __attribute__((__nonnull__(1,4)));
+N    extern "C++"
+N    inline void qsort(void * __base, size_t __nmemb, size_t __size,
+N                      int (* __compar)(const void *, const void *)) {
+N      qsort(__base, __nmemb, __size, (__C_compareprocptr)__compar);
+N    }
+N#endif
+N
+Nextern _ARMABI_PURE int abs(int /*j*/);
+Xextern __declspec(__nothrow) __attribute__((const)) int abs(int  );
+N   /*
+N    * computes the absolute value of an integer j. If the result cannot be
+N    * represented, the behaviour is undefined.
+N    * Returns: the absolute value.
+N    */
+N
+Nextern _ARMABI_PURE div_t div(int /*numer*/, int /*denom*/);
+Xextern __declspec(__nothrow) __attribute__((const)) div_t div(int  , int  );
+N   /*
+N    * computes the quotient and remainder of the division of the numerator
+N    * numer by the denominator denom. If the division is inexact, the resulting
+N    * quotient is the integer of lesser magnitude that is the nearest to the
+N    * algebraic quotient. If the result cannot be represented, the behaviour is
+N    * undefined; otherwise, quot * denom + rem shall equal numer.
+N    * Returns: a structure of type div_t, comprising both the quotient and the
+N    *          remainder. the structure shall contain the following members,
+N    *          in either order.
+N    *          int quot; int rem;
+N    */
+Nextern _ARMABI_PURE long int labs(long int /*j*/);
+Xextern __declspec(__nothrow) __attribute__((const)) long int labs(long int  );
+N   /*
+N    * computes the absolute value of an long integer j. If the result cannot be
+N    * represented, the behaviour is undefined.
+N    * Returns: the absolute value.
+N    */
+N#ifdef __cplusplus
+N   extern "C++" inline _ARMABI_PURE long abs(long int x) { return labs(x); }
+X   extern "C++" inline __declspec(__nothrow) __attribute__((const)) long abs(long int x) { return labs(x); }
+N#endif
+N
+Nextern _ARMABI_PURE ldiv_t ldiv(long int /*numer*/, long int /*denom*/);
+Xextern __declspec(__nothrow) __attribute__((const)) ldiv_t ldiv(long int  , long int  );
+N   /*
+N    * computes the quotient and remainder of the division of the numerator
+N    * numer by the denominator denom. If the division is inexact, the sign of
+N    * the resulting quotient is that of the algebraic quotient, and the
+N    * magnitude of the resulting quotient is the largest integer less than the
+N    * magnitude of the algebraic quotient. If the result cannot be represented,
+N    * the behaviour is undefined; otherwise, quot * denom + rem shall equal
+N    * numer.
+N    * Returns: a structure of type ldiv_t, comprising both the quotient and the
+N    *          remainder. the structure shall contain the following members,
+N    *          in either order.
+N    *          long int quot; long int rem;
+N    */
+N#ifdef __cplusplus
+N   extern "C++" inline _ARMABI_PURE ldiv_t div(long int __numer, long int __denom) {
+X   extern "C++" inline __declspec(__nothrow) __attribute__((const)) ldiv_t div(long int __numer, long int __denom) {
+N       return ldiv(__numer, __denom);
+N   }
+N#endif
+N
+N#if !defined(__STRICT_ANSI__) || __USE_C99_STDLIB
+X#if !0L || 1
+Nextern _ARMABI_PURE __LONGLONG llabs(__LONGLONG /*j*/);
+Xextern __declspec(__nothrow) __attribute__((const)) long long llabs(long long  );
+N   /*
+N    * computes the absolute value of a long long integer j. If the
+N    * result cannot be represented, the behaviour is undefined.
+N    * Returns: the absolute value.
+N    */
+N#ifdef __cplusplus
+N   extern "C++" inline _ARMABI_PURE __LONGLONG abs(__LONGLONG x) { return llabs(x); }
+X   extern "C++" inline __declspec(__nothrow) __attribute__((const)) long long abs(long long x) { return llabs(x); }
+N#endif
+N
+Nextern _ARMABI_PURE lldiv_t lldiv(__LONGLONG /*numer*/, __LONGLONG /*denom*/);
+Xextern __declspec(__nothrow) __attribute__((const)) lldiv_t lldiv(long long  , long long  );
+N   /*
+N    * computes the quotient and remainder of the division of the numerator
+N    * numer by the denominator denom. If the division is inexact, the sign of
+N    * the resulting quotient is that of the algebraic quotient, and the
+N    * magnitude of the resulting quotient is the largest integer less than the
+N    * magnitude of the algebraic quotient. If the result cannot be represented,
+N    * the behaviour is undefined; otherwise, quot * denom + rem shall equal
+N    * numer.
+N    * Returns: a structure of type lldiv_t, comprising both the quotient and the
+N    *          remainder. the structure shall contain the following members,
+N    *          in either order.
+N    *          long long quot; long long rem;
+N    */
+N#ifdef __cplusplus
+N   extern "C++" inline _ARMABI_PURE lldiv_t div(__LONGLONG __numer, __LONGLONG __denom) {
+X   extern "C++" inline __declspec(__nothrow) __attribute__((const)) lldiv_t div(long long __numer, long long __denom) {
+N       return lldiv(__numer, __denom);
+N   }
+N#endif
+N#endif
+N
+N#if !(__ARM_NO_DEPRECATED_FUNCTIONS)
+N/*
+N * ARM real-time divide functions for guaranteed performance
+N */
+Ntypedef struct __sdiv32by16 { int quot, rem; } __sdiv32by16;
+Ntypedef struct __udiv32by16 { unsigned int quot, rem; } __udiv32by16;
+N   /* used int so that values return in separate regs, although 16-bit */
+Ntypedef struct __sdiv64by32 { int rem, quot; } __sdiv64by32;
+N
+N__value_in_regs extern _ARMABI_PURE __sdiv32by16 __rt_sdiv32by16(
+X__value_in_regs extern __declspec(__nothrow) __attribute__((const)) __sdiv32by16 __rt_sdiv32by16(
+N     int /*numer*/,
+N     short int /*denom*/);
+N   /*
+N    * Signed divide: (16-bit quot), (16-bit rem) = (32-bit) / (16-bit)
+N    */
+N__value_in_regs extern _ARMABI_PURE __udiv32by16 __rt_udiv32by16(
+X__value_in_regs extern __declspec(__nothrow) __attribute__((const)) __udiv32by16 __rt_udiv32by16(
+N     unsigned int /*numer*/,
+N     unsigned short /*denom*/);
+N   /*
+N    * Unsigned divide: (16-bit quot), (16-bit rem) = (32-bit) / (16-bit)
+N    */
+N__value_in_regs extern _ARMABI_PURE __sdiv64by32 __rt_sdiv64by32(
+X__value_in_regs extern __declspec(__nothrow) __attribute__((const)) __sdiv64by32 __rt_sdiv64by32(
+N     int /*numer_h*/, unsigned int /*numer_l*/,
+N     int /*denom*/);
+N   /*
+N    * Signed divide: (32-bit quot), (32-bit rem) = (64-bit) / (32-bit)
+N    */
+N#endif
+N
+N/*
+N * ARM floating-point mask/status function (for both hardfp and softfp)
+N */
+Nextern _ARMABI unsigned int __fp_status(unsigned int /*mask*/, unsigned int /*flags*/);
+Xextern __declspec(__nothrow) unsigned int __fp_status(unsigned int  , unsigned int  );
+N   /*
+N    * mask and flags are bit-fields which correspond directly to the
+N    * floating point status register in the FPE/FPA and fplib.  
+N    * __fp_status returns the current value of the status register,
+N    * and also sets the writable bits of the word
+N    * (the exception control and flag bytes) to:
+N    *
+N    *     new = (old & ~mask) ^ flags;
+N    */
+N#define __fpsr_IXE  0x100000
+N#define __fpsr_UFE  0x80000
+N#define __fpsr_OFE  0x40000
+N#define __fpsr_DZE  0x20000
+N#define __fpsr_IOE  0x10000
+N
+N#define __fpsr_IXC  0x10
+N#define __fpsr_UFC  0x8
+N#define __fpsr_OFC  0x4
+N#define __fpsr_DZC  0x2
+N#define __fpsr_IOC  0x1
+N
+N/*
+N * Multibyte Character Functions.
+N * The behaviour of the multibyte character functions is affected by the
+N * LC_CTYPE category of the current locale. For a state-dependent encoding,
+N * each function is placed into its initial state by a call for which its
+N * character pointer argument, s, is a null pointer. Subsequent calls with s
+N * as other than a null pointer cause the internal state of the function to be
+N * altered as necessary. A call with s as a null pointer causes these functions
+N * to return a nonzero value if encodings have state dependency, and a zero
+N * otherwise. After the LC_CTYPE category is changed, the shift state of these
+N * functions is indeterminate.
+N */
+Nextern _ARMABI int mblen(const char * /*s*/, size_t /*n*/);
+Xextern __declspec(__nothrow) int mblen(const char *  , size_t  );
+N   /*
+N    * If s is not a null pointer, the mblen function determines the number of
+N    * bytes compromising the multibyte character pointed to by s. Except that
+N    * the shift state of the mbtowc function is not affected, it is equivalent
+N    * to   mbtowc((wchar_t *)0, s, n);
+N    * Returns: If s is a null pointer, the mblen function returns a nonzero or
+N    *          zero value, if multibyte character encodings, respectively, do
+N    *          or do not have state-dependent encodings. If s is not a null
+N    *          pointer, the mblen function either returns a 0 (if s points to a
+N    *          null character), or returns the number of bytes that compromise
+N    *          the multibyte character (if the next n of fewer bytes form a
+N    *          valid multibyte character), or returns -1 (they do not form a
+N    *          valid multibyte character).
+N    */
+Nextern _ARMABI int mbtowc(wchar_t * __restrict /*pwc*/,
+Xextern __declspec(__nothrow) int mbtowc(wchar_t * __restrict  ,
+N                   const char * __restrict /*s*/, size_t /*n*/);
+N   /*
+N    * If s is not a null pointer, the mbtowc function determines the number of
+N    * bytes that compromise the multibyte character pointed to by s. It then
+N    * determines the code for value of type wchar_t that corresponds to that
+N    * multibyte character. (The value of the code corresponding to the null
+N    * character is zero). If the multibyte character is valid and pwc is not a
+N    * null pointer, the mbtowc function stores the code in the object pointed
+N    * to by pwc. At most n bytes of the array pointed to by s will be examined.
+N    * Returns: If s is a null pointer, the mbtowc function returns a nonzero or
+N    *          zero value, if multibyte character encodings, respectively, do
+N    *          or do not have state-dependent encodings. If s is not a null
+N    *          pointer, the mbtowc function either returns a 0 (if s points to
+N    *          a null character), or returns the number of bytes that
+N    *          compromise the converted multibyte character (if the next n of
+N    *          fewer bytes form a valid multibyte character), or returns -1
+N    *          (they do not form a valid multibyte character).
+N    */
+Nextern _ARMABI int wctomb(char * /*s*/, wchar_t /*wchar*/);
+Xextern __declspec(__nothrow) int wctomb(char *  , wchar_t  );
+N   /*
+N    * determines the number of bytes need to represent the multibyte character
+N    * corresponding to the code whose value is wchar (including any change in
+N    * shift state). It stores the multibyte character representation in the
+N    * array object pointed to by s (if s is not a null pointer). At most
+N    * MB_CUR_MAX characters are stored. If the value of wchar is zero, the
+N    * wctomb function is left in the initial shift state).
+N    * Returns: If s is a null pointer, the wctomb function returns a nonzero or
+N    *          zero value, if multibyte character encodings, respectively, do
+N    *          or do not have state-dependent encodings. If s is not a null
+N    *          pointer, the wctomb function returns a -1 if the value of wchar
+N    *          does not correspond to a valid multibyte character, or returns
+N    *          the number of bytes that compromise the multibyte character
+N    *          corresponding to the value of wchar.
+N    */
+N
+N/*
+N * Multibyte String Functions.
+N * The behaviour of the multibyte string functions is affected by the LC_CTYPE
+N * category of the current locale.
+N */
+Nextern _ARMABI size_t mbstowcs(wchar_t * __restrict /*pwcs*/,
+Xextern __declspec(__nothrow) size_t mbstowcs(wchar_t * __restrict  ,
+N                      const char * __restrict /*s*/, size_t /*n*/) __attribute__((__nonnull__(2)));
+N   /*
+N    * converts a sequence of multibyte character that begins in the initial
+N    * shift state from the array pointed to by s into a sequence of
+N    * corresponding codes and stores not more than n codes into the array
+N    * pointed to by pwcs. No multibyte character that follow a null character
+N    * (which is converted into a code with value zero) will be examined or
+N    * converted. Each multibyte character is converted as if by a call to
+N    * mbtowc function, except that the shift state of the mbtowc function is
+N    * not affected. No more than n elements will be modified in the array
+N    * pointed to by pwcs. If copying takes place between objects that overlap,
+N    * the behaviour is undefined.
+N    * Returns: If an invalid multibyte character is encountered, the mbstowcs
+N    *          function returns (size_t)-1. Otherwise, the mbstowcs function
+N    *          returns the number of array elements modified, not including
+N    *          a terminating zero code, if any.
+N    */
+Nextern _ARMABI size_t wcstombs(char * __restrict /*s*/,
+Xextern __declspec(__nothrow) size_t wcstombs(char * __restrict  ,
+N                      const wchar_t * __restrict /*pwcs*/, size_t /*n*/) __attribute__((__nonnull__(2)));
+N   /*
+N    * converts a sequence of codes that correspond to multibyte characters
+N    * from the array pointed to by pwcs into a sequence of multibyte
+N    * characters that begins in the initial shift state and stores these
+N    * multibyte characters into the array pointed to by s, stopping if a
+N    * multibyte character would exceed the limit of n total bytes or if a
+N    * null character is stored. Each code is converted as if by a call to the
+N    * wctomb function, except that the shift state of the wctomb function is
+N    * not affected. No more than n elements will be modified in the array
+N    * pointed to by s. If copying takes place between objects that overlap,
+N    * the behaviour is undefined.
+N    * Returns: If a code is encountered that does not correspond to a valid
+N    *          multibyte character, the wcstombs function returns (size_t)-1.
+N    *          Otherwise, the wcstombs function returns the number of bytes
+N    *          modified, not including a terminating null character, if any.
+N    */
+N
+Nextern _ARMABI void __use_realtime_heap(void);
+Xextern __declspec(__nothrow) void __use_realtime_heap(void);
+Nextern _ARMABI void __use_realtime_division(void);
+Xextern __declspec(__nothrow) void __use_realtime_division(void);
+Nextern _ARMABI void __use_two_region_memory(void);
+Xextern __declspec(__nothrow) void __use_two_region_memory(void);
+Nextern _ARMABI void __use_no_heap(void);
+Xextern __declspec(__nothrow) void __use_no_heap(void);
+Nextern _ARMABI void __use_no_heap_region(void);
+Xextern __declspec(__nothrow) void __use_no_heap_region(void);
+N
+Nextern _ARMABI char const *__C_library_version_string(void);
+Xextern __declspec(__nothrow) char const *__C_library_version_string(void);
+Nextern _ARMABI int __C_library_version_number(void);
+Xextern __declspec(__nothrow) int __C_library_version_number(void);
+N
+N    #ifdef __cplusplus
+N         }  /* extern "C" */
+N      }  /* namespace std */
+N    #endif /* __cplusplus */
+N  #endif /* __STDLIB_DECLS */
+N
+N  #if _AEABI_PORTABILITY_LEVEL != 0 && !defined _AEABI_PORTABLE
+X  #if _AEABI_PORTABILITY_LEVEL != 0 && !0L
+S    #define _AEABI_PORTABLE
+N  #endif
+N
+N  #ifdef __cplusplus
+N    #ifndef __STDLIB_NO_EXPORTS
+N      #if !defined(__STRICT_ANSI__) || __USE_C99_STDLIB
+X      #if !0L || 1
+N        using ::std::atoll;
+N        using ::std::lldiv_t;
+N      #endif /* !defined(__STRICT_ANSI__) || __USE_C99_STDLIB */
+N      using ::std::div_t;
+N      using ::std::ldiv_t;
+N      using ::std::atof;
+N      using ::std::atoi;
+N      using ::std::atol;
+N      using ::std::strtod;
+N#if !defined(__STRICT_ANSI__) || __USE_C99_STDLIB
+X#if !0L || 1
+N      using ::std::strtof;
+N      using ::std::strtold;
+N#endif
+N      using ::std::strtol;
+N      using ::std::strtoul;
+N      using ::std::strtoll;
+N      using ::std::strtoull;
+N      using ::std::rand;
+N      using ::std::srand;
+N      using ::std::_rand_state;
+N      using ::std::_rand_r;
+N      using ::std::_srand_r;
+N      using ::std::_ANSI_rand_state;
+N      using ::std::_ANSI_rand_r;
+N      using ::std::_ANSI_srand_r;
+N      using ::std::calloc;
+N      using ::std::free;
+N      using ::std::malloc;
+N      using ::std::realloc;
+N#if !defined(__STRICT_ANSI__)
+X#if !0L
+N      using ::std::posix_memalign;
+N#endif
+N      using ::std::__heapprt;
+N      using ::std::__heapstats;
+N      using ::std::__heapvalid;
+N      using ::std::abort;
+N      using ::std::atexit;
+N      using ::std::exit;
+N      using ::std::_Exit;
+N      using ::std::getenv;
+N      using ::std::system;
+N      using ::std::bsearch;
+N      using ::std::qsort;
+N      using ::std::abs;
+N      using ::std::div;
+N      using ::std::labs;
+N      using ::std::ldiv;
+N      #if !defined(__STRICT_ANSI__) || __USE_C99_STDLIB
+X      #if !0L || 1
+N        using ::std::llabs;
+N        using ::std::lldiv;
+N      #endif /* !defined(__STRICT_ANSI__) || __USE_C99_STDLIB */
+N#if !(__ARM_NO_DEPRECATED_FUNCTIONS)
+N      using ::std::__sdiv32by16;
+N      using ::std::__udiv32by16;
+N      using ::std::__sdiv64by32;
+N      using ::std::__rt_sdiv32by16;
+N      using ::std::__rt_udiv32by16;
+N      using ::std::__rt_sdiv64by32;
+N#endif
+N      using ::std::__fp_status;
+N      using ::std::mblen;
+N      using ::std::mbtowc;
+N      using ::std::wctomb;
+N      using ::std::mbstowcs;
+N      using ::std::wcstombs;
+N      using ::std::__use_realtime_heap;
+N      using ::std::__use_realtime_division;
+N      using ::std::__use_two_region_memory;
+N      using ::std::__use_no_heap;
+N      using ::std::__use_no_heap_region;
+N      using ::std::__C_library_version_string;
+N      using ::std::__C_library_version_number;
+N      using ::std::size_t;
+N      using ::std::__aeabi_MB_CUR_MAX;
+N    #endif /* __STDLIB_NO_EXPORTS */
+N  #endif /* __cplusplus */
+N
+N#undef __LONGLONG
+N
+N#endif /* __stdlib_h */
+N
+N/* end of stdlib.h */
+L 43 "Src\Target\PreMain.cpp" 2
+N
+Nextern "C" void __default_signal_handler(int const sig, int)
+N{
+N  ITM_PUTS(__FUNCTION__);
+X  ItmPutS(__FUNCTION__);
+N
+N  switch(sig)
+N  {
+N    case SIGOUTOFHEAP: ITM_PUTS("SIGOUTOFHEAP"  ); break;
+X    case 14: ItmPutS("SIGOUTOFHEAP"  ); break;
+N    case SIGABRT     : ITM_PUTS("SIGABRT"       ); break;
+X    case 1     : ItmPutS("SIGABRT"       ); break;
+N    case SIGTERM     : ITM_PUTS("SIGTERM"       ); break;
+X    case 6     : ItmPutS("SIGTERM"       ); break;
+N    case SIGSTAK     : ITM_PUTS("SIGSTAK"       ); break;
+X    case 7     : ItmPutS("SIGSTAK"       ); break;
+N    case SIGPVFN     : ITM_PUTS("SIGPVFN"       ); break;
+X    case 12     : ItmPutS("SIGPVFN"       ); break;
+N    case SIGCPPL     : ITM_PUTS("SIGCPPL"       ); break;
+X    case 13     : ItmPutS("SIGCPPL"       ); break;
+N    default          : ITM_PUTS("Unknown signal"); break;
+X    default          : ItmPutS("Unknown signal"); break;
+N  }
+N  
+N  DEBUG_BREAK(2);
+X  __breakpoint(2);
+N
+N  Cortex::Reset();
+N}
+N
+Nextern "C" __weak int  __cxa_guard_acquire(WORD volatile * const guard)
+Xextern "C" __weak int  __cxa_guard_acquire(uint32_t volatile * const guard)
+N{
+N  ASSERT(Cortex::IsThreadMode());
+X  ((Cortex::IsThreadMode()) ? (void)0 : AssertionFailed("Cortex::IsThreadMode()", "PreMain.cpp", 66, __PRETTY_FUNCTION__));
+N
+N  if ( *guard == 1U )
+N  {
+N    return 0;
+N  } else
+N  {
+N    return 1;
+N  }
+N}
+N
+Nextern "C" __weak void __cxa_guard_release(WORD volatile * const guard)
+Xextern "C" __weak void __cxa_guard_release(uint32_t volatile * const guard)
+N{
+N  *guard = 1U;
+N}
+N
+Nextern "C" __weak void __cxa_guard_abort()
+N{
+N  ITM_PUTS(FUNC);
+X  ItmPutS(__PRETTY_FUNCTION__);
+N  DEBUG_BREAK(2);
+X  __breakpoint(2);
+N
+N  Cortex::Reset();
+N}
+N
+Nextern "C" void _mutex_release(WORD * handle) __attribute__((used)); // is weakly referenced
+Xextern "C" void _mutex_release(uint32_t * handle) __attribute__((used)); 
+Nextern "C" void _mutex_acquire(WORD * handle) __attribute__((used)); // is weakly referenced
+Xextern "C" void _mutex_acquire(uint32_t * handle) __attribute__((used)); 
+N
+Nstatic constexpr WORD const magicnum = 0x00AFFE00U;
+Xstatic constexpr uint32_t const magicnum = 0x00AFFE00U;
+N
+Nextern "C" __weak void _mutex_acquire(WORD * const handle)
+Xextern "C" __weak void _mutex_acquire(uint32_t * const handle)
+N{ 
+N  ASSERT(Cortex::IsThreadMode()); 
+X  ((Cortex::IsThreadMode()) ? (void)0 : AssertionFailed("Cortex::IsThreadMode()", "PreMain.cpp", 97, __PRETTY_FUNCTION__)); 
+N  ASSERT(*handle == magicnum);
+X  ((*handle == magicnum) ? (void)0 : AssertionFailed("*handle == magicnum", "PreMain.cpp", 98, __PRETTY_FUNCTION__));
+N}
+N
+Nextern "C" __weak void _mutex_release(WORD * const handle) 
+Xextern "C" __weak void _mutex_release(uint32_t * const handle) 
+N{ 
+N  ASSERT(Cortex::IsThreadMode()); 
+X  ((Cortex::IsThreadMode()) ? (void)0 : AssertionFailed("Cortex::IsThreadMode()", "PreMain.cpp", 103, __PRETTY_FUNCTION__)); 
+N  ASSERT(*handle == magicnum);
+X  ((*handle == magicnum) ? (void)0 : AssertionFailed("*handle == magicnum", "PreMain.cpp", 104, __PRETTY_FUNCTION__));
+N}
+N
+Nextern "C" __weak int  _mutex_initialize(WORD * const handle)
+Xextern "C" __weak int  _mutex_initialize(uint32_t * const handle)
+N{
+N  ASSERT(Cortex::IsThreadMode()); 
+X  ((Cortex::IsThreadMode()) ? (void)0 : AssertionFailed("Cortex::IsThreadMode()", "PreMain.cpp", 109, __PRETTY_FUNCTION__)); 
+N
+N  *handle = magicnum;
+N  
+N  return 1; // 1=multi threaded application, 0=single threaded application
+N}  
+N

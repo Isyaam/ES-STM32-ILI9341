@@ -1,0 +1,16 @@
+.\out\debugv5\premain.o: Src\Target\PreMain.cpp
+.\out\debugv5\premain.o: .\Inc\Compiler.h
+.\out\debugv5\premain.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+.\out\debugv5\premain.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
+.\out\debugv5\premain.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
+.\out\debugv5\premain.o: .\Inc\Debug\Debug.h
+.\out\debugv5\premain.o: .\Inc\Compiler.h
+.\out\debugv5\premain.o: .\Inc\Utilities\Formatter.h
+.\out\debugv5\premain.o: .\Inc\Compiler.h
+.\out\debugv5\premain.o: .\Inc\Cortex\Cortex.h
+.\out\debugv5\premain.o: .\Inc\Compiler.h
+.\out\debugv5\premain.o: .\Inc\Utilities\Meta.h
+.\out\debugv5\premain.o: .\Inc\Compiler.h
+.\out\debugv5\premain.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\limits.h
+.\out\debugv5\premain.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\signal.h
+.\out\debugv5\premain.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h

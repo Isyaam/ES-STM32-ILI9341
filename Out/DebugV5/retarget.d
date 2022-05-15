@@ -1,0 +1,11 @@
+.\out\debugv5\retarget.o: Src\Target\Retarget.cpp
+.\out\debugv5\retarget.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
+.\out\debugv5\retarget.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
+.\out\debugv5\retarget.o: .\Inc\Compiler.h
+.\out\debugv5\retarget.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+.\out\debugv5\retarget.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
+.\out\debugv5\retarget.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
+.\out\debugv5\retarget.o: .\Inc\Cortex\Cortex.h
+.\out\debugv5\retarget.o: .\Inc\Compiler.h
+.\out\debugv5\retarget.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\rt_sys.h
+.\out\debugv5\retarget.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\rt_misc.h

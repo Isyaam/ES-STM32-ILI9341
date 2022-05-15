@@ -1,0 +1,10 @@
+.\out\debugv5\faults.o: Src\Cortex\Faults.cpp
+.\out\debugv5\faults.o: .\Inc\Compiler.h
+.\out\debugv5\faults.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+.\out\debugv5\faults.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
+.\out\debugv5\faults.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
+.\out\debugv5\faults.o: .\Inc\Cortex\Cortex.h
+.\out\debugv5\faults.o: .\Inc\Compiler.h
+.\out\debugv5\faults.o: .\Inc\Drivers\RB_SCB.h
+.\out\debugv5\faults.o: .\Inc\Drivers\RB.h
+.\out\debugv5\faults.o: .\Inc\Compiler.h

@@ -1,0 +1,14 @@
+.\out\debugv5\dma2d.o: Src\Dma2d.cpp
+.\out\debugv5\dma2d.o: .\Inc\Dma2d.h
+.\out\debugv5\dma2d.o: .\Inc\Drivers\RB_DMA2D.h
+.\out\debugv5\dma2d.o: .\Inc\Drivers\RB.h
+.\out\debugv5\dma2d.o: .\Inc\Compiler.h
+.\out\debugv5\dma2d.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+.\out\debugv5\dma2d.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
+.\out\debugv5\dma2d.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
+.\out\debugv5\dma2d.o: .\Inc\Drivers\RB_RCC.h
+.\out\debugv5\dma2d.o: .\Inc\Drivers\RB_RCC_AHB.h
+.\out\debugv5\dma2d.o: .\Inc\Cortex\Atomic.h
+.\out\debugv5\dma2d.o: .\Inc\Compiler.h
+.\out\debugv5\dma2d.o: .\Inc\Cortex\Cortex.h
+.\out\debugv5\dma2d.o: .\Inc\Compiler.h

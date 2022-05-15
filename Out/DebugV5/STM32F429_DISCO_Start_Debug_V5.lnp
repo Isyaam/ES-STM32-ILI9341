@@ -1,0 +1,28 @@
+--cpu=Cortex-M4 --fpu=SoftVFP
+".\out\debugv5\stm32f429_disco_start.o"
+".\out\debugv5\initsdram.o"
+".\out\debugv5\drvspi.o"
+".\out\debugv5\ili9341.o"
+".\out\debugv5\drvltdc.o"
+".\out\debugv5\dma2d.o"
+".\out\debugv5\formatter.o"
+".\out\debugv5\stm32f429_startup.o"
+".\out\debugv5\stm32f429_init.o"
+".\out\debugv5\rb.o"
+".\out\debugv5\drvdio.o"
+".\out\debugv5\drvdiog.o"
+".\out\debugv5\faults.o"
+".\out\debugv5\cortex.o"
+".\out\debugv5\armexclusive.o"
+".\out\debugv5\psv.o"
+".\out\debugv5\stk.o"
+".\out\debugv5\svc.o"
+".\out\debugv5\debug.o"
+".\out\debugv5\retarget.o"
+".\out\debugv5\premain.o"
+".\out\debugv5\mystuff.o"
+".\out\debugv5\initialize.o"
+--diag_suppress 6314 --strict --scatter ".\STM32F429_DISCO_Start.sct"
+--summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
+--info sizes --info totals --info unused --info veneers
+--list ".\Lst\DebugV5\STM32F429_DISCO_Start_Debug_V5.map" -o .\Out\DebugV5\STM32F429_DISCO_Start_Debug_V5.axf
